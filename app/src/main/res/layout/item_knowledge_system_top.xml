@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/dp50">
+    <ImageView
+        android:id="@+id/ivSelectedIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:src="@mipmap/knowledge_system_selected"/>
+    <TextView
+        android:id="@+id/tvTopCategoryName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:textColor="@color/c333333"
+        android:paddingLeft="@dimen/dp05"
+        android:paddingRight="@dimen/dp05"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:text="@string/app_name"/>
+</RelativeLayout>
