@@ -7,6 +7,8 @@ import android.widget.EditText;
 import com.blankj.utilcode.util.ToastUtils;
 import com.xulc.wanandroid.R;
 import com.xulc.wanandroid.base.BaseActivity;
+import com.xulc.wanandroid.bean.RxEvent;
+import com.xulc.wanandroid.utils.RxBus;
 import com.xulc.wanandroid.view.TitleBar;
 
 /**
@@ -49,6 +51,7 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
     @Override
     public void loginSuccess() {
         ToastUtils.showShort("登录成功");
+        RxBus.getInstance().post(new RxEvent("嘿嘿嘿~登录成功"));
         finish();
     }
 

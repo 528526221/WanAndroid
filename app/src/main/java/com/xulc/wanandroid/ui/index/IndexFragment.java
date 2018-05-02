@@ -1,6 +1,8 @@
 package com.xulc.wanandroid.ui.index;
 
 import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,10 +19,15 @@ import com.xulc.wanandroid.R;
 import com.xulc.wanandroid.base.BaseLazyFragment;
 import com.xulc.wanandroid.bean.ArticleData;
 import com.xulc.wanandroid.bean.Banner;
+import com.xulc.wanandroid.bean.RxEvent;
 import com.xulc.wanandroid.ui.article.ArticleActivity;
+import com.xulc.wanandroid.utils.RxBus;
 import com.xulc.wanandroid.view.CyclicViewPager;
 
 import java.util.List;
+
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Consumer;
 
 /**
  * Date：2018/4/10
@@ -81,6 +88,7 @@ public class IndexFragment extends BaseLazyFragment<IndexPresenter> implements I
     protected IndexPresenter getPresenter() {
         return new IndexPresenter();
     }
+
 
 
     @Override
@@ -199,9 +207,22 @@ public class IndexFragment extends BaseLazyFragment<IndexPresenter> implements I
         }
     }
 
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        RxBus.getInstance().addSubscribe(this, RxEvent.class, new Consumer<RxEvent>() {
+            @Override
+            public void accept(@NonNull RxEvent rxEvent) throws Exception {
+                mPresenter.refresh();
+            }
+        });
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
+        RxBus.getInstance().unSubscribe(this);
         bannerView.stopAutoScroll();
     }
 
