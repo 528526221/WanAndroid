@@ -23,7 +23,6 @@ import io.reactivex.functions.Consumer;
 
 public class IndexPresenter extends BasePresenter<IndexContract.View> implements IndexContract.Presenter{
     private int mPage = 0;
-    private boolean isRefresh;
 
     @Override
     public void loadHomeArticles() {
@@ -33,7 +32,7 @@ public class IndexPresenter extends BasePresenter<IndexContract.View> implements
                     @Override
                     public void accept(@NonNull BaseResponse<ArticleData> articleDataBaseResponse) throws Exception {
 
-                        mView.setHomeArticles(isRefresh,articleDataBaseResponse.getData());
+                        mView.setHomeArticles(mPage == 0,articleDataBaseResponse.getData());
 
                     }
                 }, new Consumer<Throwable>() {
@@ -64,26 +63,6 @@ public class IndexPresenter extends BasePresenter<IndexContract.View> implements
 
     @Override
     public void collectArticle(final int position, final ArticleData.Article item) {
-//        if (SPUtils.getInstance().getBoolean(Constant.IS_LOGIN)){
-//            if (item.isCollect()){
-//                RetrofitManager.create(ApiService.class).removeCollectArticle(item.getId())
-//                        .compose(RxSchedulers.<BaseResponse>applySchedulers())
-//                        .subscribe(new Consumer<BaseResponse>() {
-//                            @Override
-//                            public void accept(@NonNull BaseResponse baseResponse) throws Exception {
-//                                item.setCollect(false);
-//                                mView.updateCollectArticle(position,item);
-//                            }
-//                        }, new Consumer<Throwable>() {
-//                            @Override
-//                            public void accept(@NonNull Throwable throwable) throws Exception {
-//                                Log.i("xlc", throwable.getMessage());
-//                            }
-//                        });
-//            }
-//        }else {
-//            ToastUtils.showShort("请先登录");
-//        }
 
         if (item.isCollect()){
             RetrofitManager.create(ApiService.class).removeCollectArticle(item.getId())
@@ -129,7 +108,6 @@ public class IndexPresenter extends BasePresenter<IndexContract.View> implements
 
     @Override
     public void refresh() {
-        isRefresh = true;
         mPage = 0;
         loadHomeBanners();
         loadHomeArticles();
@@ -137,7 +115,6 @@ public class IndexPresenter extends BasePresenter<IndexContract.View> implements
 
     @Override
     public void loadMore() {
-        isRefresh = false;
         mPage++;
         loadHomeArticles();
     }

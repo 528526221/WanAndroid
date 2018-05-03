@@ -89,6 +89,7 @@ public class ArticleData {
         private String link;
         private String niceDate;
         private String origin;
+        private int originId;
         private String projectLink;
         private long publishTime;
         private int superChapterId;
@@ -273,6 +274,14 @@ public class ArticleData {
 
         public void setZan(int zan) {
             this.zan = zan;
+        }
+
+        public int getOriginId() {
+            return originId;
+        }
+
+        public void setOriginId(int originId) {
+            this.originId = originId;
         }
     }
 

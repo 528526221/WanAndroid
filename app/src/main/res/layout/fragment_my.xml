@@ -10,40 +10,83 @@
         android:textSize="16sp"
         android:gravity="center"
         android:text="@string/my"/>
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/bottom_text_focus"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/ivHead"
-            android:layout_width="@dimen/dp45"
-            android:layout_height="@dimen/dp45"
-            android:layout_marginTop="@dimen/dp45"
-            android:layout_marginBottom="@dimen/dp10"
-            android:src="@mipmap/kingreader"/>
+        android:background="@color/bottom_text_focus">
         <LinearLayout
+            android:id="@+id/lyLogout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="end"
+            android:layout_marginRight="@dimen/dp10"
+            android:gravity="center">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/logout"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp05"
+                android:textSize="@dimen/sp_12"
+                android:textColor="@color/white"
+                android:text="退出登录"/>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/lyPersonInfo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp45"
             android:layout_marginBottom="@dimen/dp20"
+            android:orientation="vertical"
+            android:layout_gravity="center_horizontal"
             android:gravity="center_horizontal">
-            <TextView
-                android:id="@+id/tvName"
-                android:layout_width="wrap_content"
+            <ImageView
+                android:id="@+id/ivHead"
+                android:layout_width="@dimen/dp45"
+                android:layout_height="@dimen/dp45"
+                android:layout_marginBottom="@dimen/dp10"
+                android:src="@mipmap/head_portrait"/>
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:text="@string/app_name"/>
-            <TextView
-                android:id="@+id/tvEmail"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:textColor="@color/white"
-                android:text="@string/app_name"/>
+                android:gravity="center_vertical">
+                <TextView
+                    android:id="@+id/tvName"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:textColor="@color/white"
+                    android:text="@string/app_name"/>
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="@dimen/dp10"
+                    android:layout_marginLeft="@dimen/dp05"
+                    android:layout_marginRight="@dimen/dp05"
+                    android:background="@color/line"/>
+                <TextView
+                    android:id="@+id/tvEmail"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:text="@string/app_name"/>
+            </LinearLayout>
         </LinearLayout>
-
-    </LinearLayout>
+        <TextView
+            android:id="@+id/tvGoLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_16"
+            android:layout_gravity="center"
+            android:padding="@dimen/dp10"
+            android:text="去登录"
+            android:visibility="invisible"/>
+    </FrameLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"

@@ -6,10 +6,10 @@ package com.xulc.wanandroid.bean;
  * Created by xuliangchun.
  */
 
-public class RxEvent {
+public class RxLoginEvent {
     private String eventMessage;
 
-    public RxEvent(String eventMessage) {
+    public RxLoginEvent(String eventMessage) {
         this.eventMessage = eventMessage;
     }
 

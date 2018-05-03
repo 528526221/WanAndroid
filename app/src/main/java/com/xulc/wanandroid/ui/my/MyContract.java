@@ -10,10 +10,11 @@ import com.xulc.wanandroid.base.BaseContract;
 
 public interface MyContract {
     interface View extends BaseContract.BaseView{
-
+        void logoutSuccess();
+        void logoutFail();
     }
 
     interface Presenter extends BaseContract.BasePresenter<MyContract.View>{
-
+        void logout();
     }
 }

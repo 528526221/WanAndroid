@@ -86,6 +86,14 @@ public interface ApiService {
     //6.收藏
 
     /**
+     * 收藏文章列表
+     * @param page 页码：拼接在链接中，从0开始。
+     * @return
+     */
+    @GET("/lg/collect/list/{page}/json")
+    Observable<BaseResponse<ArticleData>> getCollectList(@Path("page") int page);
+
+    /**
      * 6.2 收藏站内文章
      * @param id 文章id，拼接在链接中
      * @return
@@ -108,6 +116,7 @@ public interface ApiService {
      * @return
      */
     @POST("/lg/uncollect/{id}/json")
+    @FormUrlEncoded
     Observable<BaseResponse> removeCollectArticle(@Path("id") int id,@Field("originId") int originId);
 
 

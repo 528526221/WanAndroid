@@ -7,9 +7,8 @@ import android.widget.EditText;
 import com.blankj.utilcode.util.ToastUtils;
 import com.xulc.wanandroid.R;
 import com.xulc.wanandroid.base.BaseActivity;
-import com.xulc.wanandroid.bean.RxEvent;
+import com.xulc.wanandroid.bean.RxLoginEvent;
 import com.xulc.wanandroid.utils.RxBus;
-import com.xulc.wanandroid.view.TitleBar;
 
 /**
  * Date：2018/4/17
@@ -18,7 +17,6 @@ import com.xulc.wanandroid.view.TitleBar;
  */
 
 public class LoginActivity extends BaseActivity<LoginPresenter> implements LoginContract.View{
-    private TitleBar titleBar;
     private EditText etUserName;
     private EditText etPassword;
     private Button btnLogin;
@@ -34,7 +32,6 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
 
     @Override
     protected void initView() {
-        titleBar = (TitleBar) findViewById(R.id.titleBar);
         etUserName = (EditText) findViewById(R.id.etUserName);
         etPassword = (EditText) findViewById(R.id.etPassword);
         btnLogin = (Button) findViewById(R.id.btnLogin);
@@ -44,14 +41,13 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
                 mPresenter.login(etUserName.getText().toString(),etPassword.getText().toString());
             }
         });
-        titleBar.setTitle(getString(R.string.login));
 
     }
 
     @Override
     public void loginSuccess() {
         ToastUtils.showShort("登录成功");
-        RxBus.getInstance().post(new RxEvent("嘿嘿嘿~登录成功"));
+        RxBus.getInstance().post(new RxLoginEvent("嘿嘿嘿~登录成功"));
         finish();
     }
 

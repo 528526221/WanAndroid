@@ -2,6 +2,7 @@ package com.xulc.wanandroid.utils;
 
 import com.blankj.utilcode.util.SPUtils;
 import com.xulc.wanandroid.bean.BaseResponse;
+import com.xulc.wanandroid.bean.RxLoginEvent;
 import com.xulc.wanandroid.bean.User;
 import com.xulc.wanandroid.net.ApiService;
 import com.xulc.wanandroid.net.Constant;
@@ -29,7 +30,7 @@ public class LoginUtil {
         return LoginUtilInstance.instance;
     }
 
-    private void login(){
+    public void login(){
         if (UserUtil.getInstance().getUser() == null){
             return;
         }
@@ -41,6 +42,7 @@ public class LoginUtil {
                         if (userBaseResponse.getErrorCode()==0){
                             UserUtil.getInstance().setUser(userBaseResponse.getData());
                             SPUtils.getInstance().put(Constant.IS_LOGIN,true);
+                            RxBus.getInstance().post(new RxLoginEvent(""));
                         }else {
 
                         }

@@ -19,4 +19,7 @@
         <attr name="IndicatorTwoTabDistance" format="dimension"/>
         <attr name="IndicatorDrawTabBackground" format="boolean"/>
     </declare-styleable>
+    <declare-styleable name="TitleBar">
+        <attr name="title" format="string"/>
+    </declare-styleable>
 </resources>

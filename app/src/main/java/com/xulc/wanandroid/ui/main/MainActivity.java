@@ -16,6 +16,7 @@ import com.xulc.wanandroid.base.BasePresenter;
 import com.xulc.wanandroid.ui.index.IndexFragment;
 import com.xulc.wanandroid.ui.knowledgesystem.KnowledgeSystemFragment;
 import com.xulc.wanandroid.ui.my.MyFragment;
+import com.xulc.wanandroid.utils.LoginUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,6 +83,9 @@ public class MainActivity extends BaseActivity {
 
             }
         });
+
+        LoginUtil.getInstance().login();
+
     }
 
     private void selectTab(int position) {

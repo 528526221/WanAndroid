@@ -9,7 +9,6 @@ import com.blankj.utilcode.util.ToastUtils;
 import com.xulc.wanandroid.R;
 import com.xulc.wanandroid.base.BaseActivity;
 import com.xulc.wanandroid.ui.login.LoginActivity;
-import com.xulc.wanandroid.view.TitleBar;
 
 /**
  * Date：2018/4/16
@@ -19,7 +18,6 @@ import com.xulc.wanandroid.view.TitleBar;
 
 public class RegisterActivity extends BaseActivity<RegisterPresenter> implements RegisterContract.View{
 
-    private TitleBar titleBar;
     private EditText etUserName;
     private EditText etPassword;
     private EditText etConfirmPassword;
@@ -37,7 +35,6 @@ public class RegisterActivity extends BaseActivity<RegisterPresenter> implements
 
     @Override
     protected void initView() {
-        titleBar = (TitleBar) findViewById(R.id.titleBar);
         etUserName = (EditText) findViewById(R.id.etUserName);
         etPassword = (EditText) findViewById(R.id.etPassword);
         etConfirmPassword = (EditText) findViewById(R.id.etConfirmPassword);
@@ -48,7 +45,6 @@ public class RegisterActivity extends BaseActivity<RegisterPresenter> implements
                 mPresenter.registerAccount(etUserName.getText().toString(),etPassword.getText().toString(),etConfirmPassword.getText().toString());
             }
         });
-        titleBar.setTitle(getString(R.string.register));
     }
 
     @Override
