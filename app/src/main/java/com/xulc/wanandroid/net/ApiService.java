@@ -2,7 +2,7 @@ package com.xulc.wanandroid.net;
 
 import com.xulc.wanandroid.bean.ArticleData;
 import com.xulc.wanandroid.bean.Banner;
-import com.xulc.wanandroid.bean.BaseResponse;
+import com.xulc.wanandroid.base.BaseResponse;
 import com.xulc.wanandroid.bean.KnowledgeSystem;
 import com.xulc.wanandroid.bean.User;
 

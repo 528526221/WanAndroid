@@ -1,18 +1,13 @@
 package com.xulc.wanandroid.ui.knowledgesystem;
 
-import android.util.Log;
-
+import com.xulc.wanandroid.base.BaseObserver;
 import com.xulc.wanandroid.base.BasePresenter;
-import com.xulc.wanandroid.bean.BaseResponse;
+import com.xulc.wanandroid.base.BaseResponse;
 import com.xulc.wanandroid.bean.KnowledgeSystem;
-import com.xulc.wanandroid.net.ApiService;
 import com.xulc.wanandroid.net.RetrofitManager;
 import com.xulc.wanandroid.utils.RxSchedulers;
 
 import java.util.List;
-
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
 
 /**
  * Date：2018/4/12
@@ -24,11 +19,11 @@ public class KnowledgeSystemPresenter extends BasePresenter<KnowledgeSystemContr
 
     @Override
     public void loadKnowledgeSystem() {
-        RetrofitManager.create(ApiService.class).getKnowledgeSystem()
+        RetrofitManager.getApiService().getKnowledgeSystem()
                 .compose(RxSchedulers.<BaseResponse<List<KnowledgeSystem>>>applySchedulers())
-                .subscribe(new Consumer<BaseResponse<List<KnowledgeSystem>>>() {
+                .subscribe(new BaseObserver<List<KnowledgeSystem>>() {
                     @Override
-                    public void accept(@NonNull BaseResponse<List<KnowledgeSystem>> listBaseResponse) throws Exception {
+                    protected void onSuccess(BaseResponse<List<KnowledgeSystem>> listBaseResponse) {
                         for(KnowledgeSystem it : listBaseResponse.getData()){
                             for (KnowledgeSystem child : it.getChildren()){
                                 child.setParentChapterName(it.getName());
@@ -36,10 +31,10 @@ public class KnowledgeSystemPresenter extends BasePresenter<KnowledgeSystemContr
                         }
                         mView.setKnowledgeSystem(listBaseResponse.getData());
                     }
-                }, new Consumer<Throwable>() {
+
                     @Override
-                    public void accept(@NonNull Throwable throwable) throws Exception {
-                        Log.i("xlc", throwable.getMessage());
+                    protected void onFail(BaseResponse<List<KnowledgeSystem>> listBaseResponse) {
+
                     }
                 });
     }

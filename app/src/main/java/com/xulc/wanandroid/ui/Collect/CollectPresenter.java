@@ -1,14 +1,11 @@
 package com.xulc.wanandroid.ui.Collect;
 
+import com.xulc.wanandroid.base.BaseObserver;
 import com.xulc.wanandroid.base.BasePresenter;
+import com.xulc.wanandroid.base.BaseResponse;
 import com.xulc.wanandroid.bean.ArticleData;
-import com.xulc.wanandroid.bean.BaseResponse;
-import com.xulc.wanandroid.net.ApiService;
 import com.xulc.wanandroid.net.RetrofitManager;
 import com.xulc.wanandroid.utils.RxSchedulers;
-
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
 
 /**
  * Date：2018/5/3
@@ -20,16 +17,16 @@ public class CollectPresenter extends BasePresenter<CollectContract.View> implem
     private int mPage = 0;
     @Override
     public void loadCollectList() {
-        RetrofitManager.create(ApiService.class).getCollectList(mPage)
+        RetrofitManager.getApiService().getCollectList(mPage)
                 .compose(RxSchedulers.<BaseResponse<ArticleData>>applySchedulers())
-                .subscribe(new Consumer<BaseResponse<ArticleData>>() {
+                .subscribe(new BaseObserver<ArticleData>() {
                     @Override
-                    public void accept(@NonNull BaseResponse<ArticleData> articleDataBaseResponse) throws Exception {
+                    protected void onSuccess(BaseResponse<ArticleData> articleDataBaseResponse) {
                         mView.setCollectList(mPage == 0,articleDataBaseResponse.getData());
                     }
-                }, new Consumer<Throwable>() {
+
                     @Override
-                    public void accept(@NonNull Throwable throwable) throws Exception {
+                    protected void onFail(BaseResponse<ArticleData> articleDataBaseResponse) {
 
                     }
                 });
@@ -48,18 +45,19 @@ public class CollectPresenter extends BasePresenter<CollectContract.View> implem
 
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void removeCollect(final int position, ArticleData.Article item) {
-        RetrofitManager.create(ApiService.class).removeCollectArticle(item.getId(),item.getOriginId())
+        RetrofitManager.getApiService().removeCollectArticle(item.getId(),item.getOriginId())
                 .compose(RxSchedulers.<BaseResponse>applySchedulers())
-                .subscribe(new Consumer<BaseResponse>() {
+                .subscribe(new BaseObserver() {
                     @Override
-                    public void accept(@NonNull BaseResponse baseResponse) throws Exception {
+                    protected void onSuccess(BaseResponse baseResponse) {
                         mView.removeCollect(position);
                     }
-                }, new Consumer<Throwable>() {
+
                     @Override
-                    public void accept(@NonNull Throwable throwable) throws Exception {
+                    protected void onFail(BaseResponse baseResponse) {
 
                     }
                 });

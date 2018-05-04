@@ -1,4 +1,4 @@
-package com.xulc.wanandroid.bean;
+package com.xulc.wanandroid.base;
 
 /**
  * Date：2018/4/11

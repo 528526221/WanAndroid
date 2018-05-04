@@ -55,7 +55,6 @@ public class RegisterActivity extends BaseActivity<RegisterPresenter> implements
 
     @Override
     public void registerFail(String msg) {
-        ToastUtils.showShort(msg);
     }
 
     @Override

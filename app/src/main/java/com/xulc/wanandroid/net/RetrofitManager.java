@@ -34,7 +34,7 @@ public class RetrofitManager {
     private static final long CACHE_STALE_SEC = 60 * 60 * 24 * 1;//缓存记录有效期1天
     private static final int CACHE_NET_SEC = 10;//在10s内的GET请求不会重复向网络提交，会优先从缓存中读取
     private static volatile OkHttpClient mOkHttpClient;
-
+    private static ApiService apiService;
     /**
      * 云端响应头拦截器，用来配置缓存策略
      * Dangerous interceptor that rewrites the server's cache-control header.
@@ -119,7 +119,8 @@ public class RetrofitManager {
             synchronized (RetrofitManager.class) {
                 Cache cache = new Cache(new File(App.getAppContext().getCacheDir(), "HttpCache"), 1024 * 1024 * 10);//缓存文件大小10M
                 if (mOkHttpClient == null) {
-                    mOkHttpClient = new OkHttpClient.Builder().cache(cache)
+                    mOkHttpClient = new OkHttpClient.Builder()
+                            .cache(cache)
                             .connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
                             .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
                             .writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
@@ -142,10 +143,22 @@ public class RetrofitManager {
      * @return
      */
     public static <T> T create(Class<T> clazz) {
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(Constant.REQUEST_BASE_URL)
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Constant.REQUEST_BASE_URL)
                 .client(getOkHttpClient())
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create()).build();
         return retrofit.create(clazz);
+    }
+
+    public static ApiService getApiService(){
+        if (apiService == null){
+            synchronized (RetrofitManager.class){
+                if (apiService == null){
+                    apiService = create(ApiService.class);
+                }
+            }
+        }
+        return apiService;
     }
 }

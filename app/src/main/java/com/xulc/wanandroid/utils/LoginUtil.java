@@ -1,15 +1,12 @@
 package com.xulc.wanandroid.utils;
 
 import com.blankj.utilcode.util.SPUtils;
-import com.xulc.wanandroid.bean.BaseResponse;
+import com.xulc.wanandroid.base.BaseObserver;
+import com.xulc.wanandroid.base.BaseResponse;
 import com.xulc.wanandroid.bean.RxLoginEvent;
 import com.xulc.wanandroid.bean.User;
-import com.xulc.wanandroid.net.ApiService;
 import com.xulc.wanandroid.net.Constant;
 import com.xulc.wanandroid.net.RetrofitManager;
-
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
 
 
 /**
@@ -34,22 +31,18 @@ public class LoginUtil {
         if (UserUtil.getInstance().getUser() == null){
             return;
         }
-        RetrofitManager.create(ApiService.class).loginAccount(UserUtil.getInstance().getUser().getUsername(),UserUtil.getInstance().getUser().getPassword())
+        RetrofitManager.getApiService().loginAccount(UserUtil.getInstance().getUser().getUsername(),UserUtil.getInstance().getUser().getPassword())
                 .compose(RxSchedulers.<BaseResponse<User>>applySchedulers())
-                .subscribe(new Consumer<BaseResponse<User>>() {
+                .subscribe(new BaseObserver<User>() {
                     @Override
-                    public void accept(@NonNull BaseResponse<User> userBaseResponse) throws Exception {
-                        if (userBaseResponse.getErrorCode()==0){
-                            UserUtil.getInstance().setUser(userBaseResponse.getData());
-                            SPUtils.getInstance().put(Constant.IS_LOGIN,true);
-                            RxBus.getInstance().post(new RxLoginEvent(""));
-                        }else {
-
-                        }
+                    protected void onSuccess(BaseResponse<User> userBaseResponse) {
+                        UserUtil.getInstance().setUser(userBaseResponse.getData());
+                        SPUtils.getInstance().put(Constant.IS_LOGIN,true);
+                        RxBus.getInstance().post(new RxLoginEvent(""));
                     }
-                }, new Consumer<Throwable>() {
+
                     @Override
-                    public void accept(@NonNull Throwable throwable) throws Exception {
+                    protected void onFail(BaseResponse<User> userBaseResponse) {
 
                     }
                 });

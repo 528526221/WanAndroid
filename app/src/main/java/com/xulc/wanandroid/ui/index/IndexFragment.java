@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.blankj.utilcode.util.ToastUtils;
 import com.bumptech.glide.Glide;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.xulc.wanandroid.R;
@@ -171,7 +170,7 @@ public class IndexFragment extends BaseLazyFragment<IndexPresenter> implements I
 
     @Override
     public void collectError(String error) {
-        ToastUtils.showShort(error);
+
     }
 
     @Override

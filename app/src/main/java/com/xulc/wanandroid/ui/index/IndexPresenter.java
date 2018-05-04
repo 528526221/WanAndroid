@@ -1,19 +1,14 @@
 package com.xulc.wanandroid.ui.index;
 
-import android.util.Log;
-
+import com.xulc.wanandroid.base.BaseObserver;
 import com.xulc.wanandroid.base.BasePresenter;
+import com.xulc.wanandroid.base.BaseResponse;
 import com.xulc.wanandroid.bean.ArticleData;
 import com.xulc.wanandroid.bean.Banner;
-import com.xulc.wanandroid.bean.BaseResponse;
-import com.xulc.wanandroid.net.ApiService;
 import com.xulc.wanandroid.net.RetrofitManager;
 import com.xulc.wanandroid.utils.RxSchedulers;
 
 import java.util.List;
-
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
 
 /**
  * Date：2018/4/11
@@ -21,24 +16,21 @@ import io.reactivex.functions.Consumer;
  * Created by xuliangchun.
  */
 
-public class IndexPresenter extends BasePresenter<IndexContract.View> implements IndexContract.Presenter{
+public class IndexPresenter extends BasePresenter<IndexContract.View> implements IndexContract.Presenter {
     private int mPage = 0;
 
     @Override
     public void loadHomeArticles() {
-        RetrofitManager.create(ApiService.class).getHomeArticles(mPage)
+        RetrofitManager.getApiService().getHomeArticles(mPage)
                 .compose(RxSchedulers.<BaseResponse<ArticleData>>applySchedulers())
-                .subscribe(new Consumer<BaseResponse<ArticleData>>() {
+                .subscribe(new BaseObserver<ArticleData>() {
                     @Override
-                    public void accept(@NonNull BaseResponse<ArticleData> articleDataBaseResponse) throws Exception {
-
-                        mView.setHomeArticles(mPage == 0,articleDataBaseResponse.getData());
-
+                    protected void onSuccess(BaseResponse<ArticleData> articleDataBaseResponse) {
+                        mView.setHomeArticles(mPage == 0, articleDataBaseResponse.getData());
                     }
-                }, new Consumer<Throwable>() {
+
                     @Override
-                    public void accept(@NonNull Throwable throwable) throws Exception {
-                        Log.i("xlc", throwable.getMessage());
+                    protected void onFail(BaseResponse<ArticleData> articleDataBaseResponse) {
 
                     }
                 });
@@ -46,61 +38,53 @@ public class IndexPresenter extends BasePresenter<IndexContract.View> implements
 
     @Override
     public void loadHomeBanners() {
-        RetrofitManager.create(ApiService.class).getHomeBanners()
+        RetrofitManager.getApiService().getHomeBanners()
                 .compose(RxSchedulers.<BaseResponse<List<Banner>>>applySchedulers())
-                .subscribe(new Consumer<BaseResponse<List<Banner>>>() {
+                .subscribe(new BaseObserver<List<Banner>>() {
                     @Override
-                    public void accept(@NonNull BaseResponse<List<Banner>> listBaseResponse) throws Exception {
+                    protected void onSuccess(BaseResponse<List<Banner>> listBaseResponse) {
                         mView.setHomeBanners(listBaseResponse.getData());
                     }
-                }, new Consumer<Throwable>() {
+
                     @Override
-                    public void accept(@NonNull Throwable throwable) throws Exception {
-                        Log.i("xlc", throwable.getMessage());
+                    protected void onFail(BaseResponse<List<Banner>> listBaseResponse) {
                     }
                 });
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void collectArticle(final int position, final ArticleData.Article item) {
 
-        if (item.isCollect()){
-            RetrofitManager.create(ApiService.class).removeCollectArticle(item.getId())
+        if (item.isCollect()) {
+            RetrofitManager.getApiService().removeCollectArticle(item.getId())
                     .compose(RxSchedulers.<BaseResponse>applySchedulers())
-                    .subscribe(new Consumer<BaseResponse>() {
+                    .subscribe(new BaseObserver() {
                         @Override
-                        public void accept(@NonNull BaseResponse baseResponse) throws Exception {
-                            if (baseResponse.getErrorCode() == 0){
-                                item.setCollect(false);
-                                mView.updateCollectArticle(position,item);
-                            }else {
-                                mView.collectError(baseResponse.getErrorMsg());
-                            }
+                        protected void onSuccess(BaseResponse baseResponse) {
+                            item.setCollect(false);
+                            mView.updateCollectArticle(position, item);
+                        }
+
+                        @Override
+                        protected void onFail(BaseResponse baseResponse) {
+                            mView.collectError(baseResponse.getErrorMsg());
 
                         }
-                    }, new Consumer<Throwable>() {
-                        @Override
-                        public void accept(@NonNull Throwable throwable) throws Exception {
-                            Log.i("xlc", throwable.getMessage());
-                        }
                     });
-        }else {
-            RetrofitManager.create(ApiService.class).addCollectArticle(item.getId())
+        } else {
+            RetrofitManager.getApiService().addCollectArticle(item.getId())
                     .compose(RxSchedulers.<BaseResponse>applySchedulers())
-                    .subscribe(new Consumer<BaseResponse>() {
+                    .subscribe(new BaseObserver() {
                         @Override
-                        public void accept(@NonNull BaseResponse baseResponse) throws Exception {
-                            if (baseResponse.getErrorCode() == 0){
-                                item.setCollect(true);
-                                mView.updateCollectArticle(position,item);
-                            }else {
-                                mView.collectError(baseResponse.getErrorMsg());
-                            }
+                        protected void onSuccess(BaseResponse baseResponse) {
+                            item.setCollect(true);
+                            mView.updateCollectArticle(position, item);
                         }
-                    }, new Consumer<Throwable>() {
+
                         @Override
-                        public void accept(@NonNull Throwable throwable) throws Exception {
-                            Log.i("xlc", throwable.getMessage());
+                        protected void onFail(BaseResponse baseResponse) {
+
                         }
                     });
         }

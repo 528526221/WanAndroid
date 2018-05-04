@@ -1,19 +1,11 @@
 package com.xulc.wanandroid.ui.KnowledgeSystemArticle;
 
-import android.util.Log;
-
-import com.blankj.utilcode.util.SPUtils;
-import com.blankj.utilcode.util.ToastUtils;
+import com.xulc.wanandroid.base.BaseObserver;
 import com.xulc.wanandroid.base.BasePresenter;
+import com.xulc.wanandroid.base.BaseResponse;
 import com.xulc.wanandroid.bean.ArticleData;
-import com.xulc.wanandroid.bean.BaseResponse;
-import com.xulc.wanandroid.net.ApiService;
-import com.xulc.wanandroid.net.Constant;
 import com.xulc.wanandroid.net.RetrofitManager;
 import com.xulc.wanandroid.utils.RxSchedulers;
-
-import io.reactivex.annotations.NonNull;
-import io.reactivex.functions.Consumer;
 
 /**
  * Date：2018/4/16
@@ -27,16 +19,16 @@ public class KnowledgeSystemArticlePresenter extends BasePresenter<KnowledgeSyst
 
 
     private void loadKnowledgeSystemArticles(int cid) {
-        RetrofitManager.create(ApiService.class).getKnowledgeArticles(page,cid)
+        RetrofitManager.getApiService().getKnowledgeArticles(page,cid)
                 .compose(RxSchedulers.<BaseResponse<ArticleData>>applySchedulers())
-                .subscribe(new Consumer<BaseResponse<ArticleData>>() {
+                .subscribe(new BaseObserver<ArticleData>() {
                     @Override
-                    public void accept(@NonNull BaseResponse<ArticleData> articleDataBaseResponse) throws Exception {
+                    protected void onSuccess(BaseResponse<ArticleData> articleDataBaseResponse) {
                         mView.setArticles(articleDataBaseResponse.getData(),isRefresh);
                     }
-                }, new Consumer<Throwable>() {
+
                     @Override
-                    public void accept(@NonNull Throwable throwable) throws Exception {
+                    protected void onFail(BaseResponse<ArticleData> articleDataBaseResponse) {
 
                     }
                 });
@@ -57,27 +49,39 @@ public class KnowledgeSystemArticlePresenter extends BasePresenter<KnowledgeSyst
         loadKnowledgeSystemArticles(cid);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void collectArticle(final int position, final ArticleData.Article item) {
-        if (SPUtils.getInstance().getBoolean(Constant.IS_LOGIN)){
-            if (item.isCollect()){
-                RetrofitManager.create(ApiService.class).removeCollectArticle(item.getId())
-                        .compose(RxSchedulers.<BaseResponse>applySchedulers())
-                        .subscribe(new Consumer<BaseResponse>() {
-                            @Override
-                            public void accept(@NonNull BaseResponse baseResponse) throws Exception {
-                                item.setCollect(false);
-                                mView.updateCollectArticle(position,item);
-                            }
-                        }, new Consumer<Throwable>() {
-                            @Override
-                            public void accept(@NonNull Throwable throwable) throws Exception {
-                                Log.i("xlc", throwable.getMessage());
-                            }
-                        });
-            }
+        if (item.isCollect()){
+            RetrofitManager.getApiService().removeCollectArticle(item.getId())
+                    .compose(RxSchedulers.<BaseResponse>applySchedulers())
+                    .subscribe(new BaseObserver() {
+                        @Override
+                        protected void onSuccess(BaseResponse baseResponse) {
+                            item.setCollect(false);
+                            mView.updateCollectArticle(position,item);
+                        }
+
+                        @Override
+                        protected void onFail(BaseResponse baseResponse) {
+
+                        }
+                    });
         }else {
-            ToastUtils.showShort("请先登录");
+            RetrofitManager.getApiService().addCollectArticle(item.getId())
+                    .compose(RxSchedulers.<BaseResponse>applySchedulers())
+                    .subscribe(new BaseObserver() {
+                        @Override
+                        protected void onSuccess(BaseResponse baseResponse) {
+                            item.setCollect(true);
+                            mView.updateCollectArticle(position, item);
+                        }
+
+                        @Override
+                        protected void onFail(BaseResponse baseResponse) {
+
+                        }
+                    });
         }
     }
 
