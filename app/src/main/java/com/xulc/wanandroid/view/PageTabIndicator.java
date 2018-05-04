@@ -335,10 +335,11 @@ public class PageTabIndicator extends RelativeLayout {
             }
 
             @Override
-            public void onPageSelected(int position) {
+            public void onPageSelected(final int position) {
                 //滚动当前选中的tab到屏幕中央区域
                 //计算当前tab的中心点位置x  多做一步操作，将点击的tab滚动到屏幕中央
                 //如果还没有屏幕宽 那当然就不需滚动了
+
                 if (getWidth() > indicatorLayoutWidth) {
                     int dx = 0;
                     for (int i = 0; i < tabWidthArray.length; i++) {
@@ -353,6 +354,8 @@ public class PageTabIndicator extends RelativeLayout {
 //                    dx = dx-(getScrollX()+indicatorLayoutWidth/2);
                     startScroll(dx - (getScrollX() + indicatorLayoutWidth / 2), mScroller);
                 }
+
+
             }
 
             @Override

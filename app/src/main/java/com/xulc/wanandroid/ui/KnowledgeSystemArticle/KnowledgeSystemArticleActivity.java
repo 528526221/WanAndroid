@@ -40,7 +40,6 @@ public class KnowledgeSystemArticleActivity extends BaseActivity{
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         String name = getIntent().getStringExtra("name");
         List<KnowledgeSystem> childs = (List<KnowledgeSystem>) getIntent().getSerializableExtra("childs");
-        int position = getIntent().getIntExtra("position",0);
         tvTitle.setText(name);
         ArticleFragmentAdapter fragmentAdapter = new ArticleFragmentAdapter(getSupportFragmentManager(),childs);
         viewPager.setAdapter(fragmentAdapter);
@@ -50,7 +49,14 @@ public class KnowledgeSystemArticleActivity extends BaseActivity{
             titles.add(it.getName());
         }
         tabIndicator.setTitles(titles);
-        viewPager.setCurrentItem(position);
+
+        //延迟 避免tab未居中
+        tabIndicator.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                viewPager.setCurrentItem(getIntent().getIntExtra("position",0));
+            }
+        },100);
 
     }
 }

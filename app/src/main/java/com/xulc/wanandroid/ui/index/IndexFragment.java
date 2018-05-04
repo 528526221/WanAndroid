@@ -202,9 +202,10 @@ public class IndexFragment extends BaseLazyFragment<IndexPresenter> implements I
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onDestroyView() {
+        super.onDestroyView();
         bannerView.stopAutoScroll();
+
     }
 
     @Override

@@ -191,6 +191,7 @@ public class CyclicViewPager<T> extends ViewPager {
      * 开始自动轮播
      */
     public void startAutoScroll() {
+        stopAutoScroll();
         isAutoScroll = true;
         this.handler = new Handler(){
             @Override
@@ -218,9 +219,10 @@ public class CyclicViewPager<T> extends ViewPager {
      */
     public void stopAutoScroll() {
         isAutoScroll = false;
-        if (handler != null)
+        if (handler!=null){
             handler.removeMessages(MSG_AUTO_SCROLL);
-        handler = null;
+            handler = null;
+        }
     }
 
     /**
