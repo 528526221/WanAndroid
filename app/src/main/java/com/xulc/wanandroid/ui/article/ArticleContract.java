@@ -14,7 +14,7 @@ public class ArticleContract {
     }
 
     interface Presenter extends BaseContract.BasePresenter<ArticleContract.View>{
-
+        void addCollectOutSide(String title,String author,String link);
     }
 
 }

@@ -17,5 +17,7 @@
     <dimen name="nav_header_height">160dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="dp03">3dp</dimen>
+    <dimen name="dp100">100dp</dimen>
+    <dimen name="dp15">15dp</dimen>
 
 </resources>

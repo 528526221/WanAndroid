@@ -24,6 +24,9 @@
         <item name="android:textColor">@color/bottom_bar_text_selector</item>
     </style>
 
-
+    <style name="menu_window_style">
+        <item name="android:windowEnterAnimation">@anim/anim_menu_enter</item>
+        <item name="android:windowExitAnimation">@anim/anim_menu_exit</item>
+    </style>
 
 </resources>

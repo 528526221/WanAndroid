@@ -67,8 +67,8 @@ public interface ApiService {
      * @param password
      * @return
      */
-    @POST("/user/login")
     @FormUrlEncoded
+    @POST("/user/login")
     Observable<BaseResponse<User>> loginAccount(@Field("username") String username,@Field("password") String password);
 
     /**
@@ -78,8 +78,8 @@ public interface ApiService {
      * @param repassword
      * @return
      */
-    @POST("/user/register")
     @FormUrlEncoded
+    @POST("/user/register")
     Observable<BaseResponse<User>> registerAccount(@Field("username") String username, @Field("password") String password, @Field("repassword") String repassword);
 
 
@@ -102,6 +102,18 @@ public interface ApiService {
     Observable<BaseResponse> addCollectArticle(@Path("id") int id);
 
     /**
+     * 6.3 收藏站外文章
+     * @param title
+     * @param author
+     * @param link
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/lg/collect/add/json")
+    Observable<BaseResponse> addCollectOutSide(@Field("title") String title,@Field("author") String author,@Field("link") String link);
+
+
+    /**
      * 6.4.1 取消收藏 (文章列表)
      * @param id 拼接在链接上
      * @return
@@ -115,8 +127,8 @@ public interface ApiService {
      * @param originId 列表页下发，无则为-1
      * @return
      */
-    @POST("/lg/uncollect/{id}/json")
     @FormUrlEncoded
+    @POST("/lg/uncollect/{id}/json")
     Observable<BaseResponse> removeCollectArticle(@Path("id") int id,@Field("originId") int originId);
 
 
