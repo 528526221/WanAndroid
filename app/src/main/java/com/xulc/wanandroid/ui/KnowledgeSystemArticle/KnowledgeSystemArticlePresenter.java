@@ -7,6 +7,8 @@ import com.xulc.wanandroid.bean.ArticleData;
 import com.xulc.wanandroid.net.RetrofitManager;
 import com.xulc.wanandroid.utils.RxSchedulers;
 
+import javax.inject.Inject;
+
 /**
  * Date：2018/4/16
  * Desc：
@@ -17,6 +19,9 @@ public class KnowledgeSystemArticlePresenter extends BasePresenter<KnowledgeSyst
     private int page;
     private boolean isRefresh;
 
+    @Inject
+    public KnowledgeSystemArticlePresenter() {
+    }
 
     private void loadKnowledgeSystemArticles(int cid) {
         RetrofitManager.getApiService().getKnowledgeArticles(page,cid)

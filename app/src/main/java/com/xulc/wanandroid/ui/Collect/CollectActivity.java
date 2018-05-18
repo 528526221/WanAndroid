@@ -20,14 +20,15 @@ import com.xulc.wanandroid.ui.index.IndexDecoration;
  * Created by xuliangchun.
  */
 
-public class CollectActivity extends BaseActivity<CollectContract.Presenter> implements CollectContract.View,SwipeRefreshLayout.OnRefreshListener, BaseQuickAdapter.RequestLoadMoreListener, BaseQuickAdapter.OnItemChildClickListener {
+public class CollectActivity extends BaseActivity<CollectPresenter> implements CollectContract.View,SwipeRefreshLayout.OnRefreshListener, BaseQuickAdapter.RequestLoadMoreListener, BaseQuickAdapter.OnItemChildClickListener {
     private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView recyclerView;
     private CollectAdapter collectAdapter;
 
+
     @Override
-    protected CollectContract.Presenter getPresenter() {
-        return new CollectPresenter();
+    protected void initInjector() {
+        mActivityComponent.inject(this);
     }
 
     @Override

@@ -9,6 +9,8 @@ import com.xulc.wanandroid.bean.User;
 import com.xulc.wanandroid.net.RetrofitManager;
 import com.xulc.wanandroid.utils.RxSchedulers;
 
+import javax.inject.Inject;
+
 /**
  * Date：2018/4/16
  * Desc：
@@ -16,6 +18,11 @@ import com.xulc.wanandroid.utils.RxSchedulers;
  */
 
 public class RegisterPresenter extends BasePresenter<RegisterContract.View> implements RegisterContract.Presenter{
+
+    @Inject
+    public RegisterPresenter() {
+    }
+
     @Override
     public void registerAccount(String userName, String password, String repassword) {
         if (TextUtils.isEmpty(userName)){

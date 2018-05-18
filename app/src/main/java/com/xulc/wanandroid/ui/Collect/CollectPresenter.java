@@ -7,6 +7,8 @@ import com.xulc.wanandroid.bean.ArticleData;
 import com.xulc.wanandroid.net.RetrofitManager;
 import com.xulc.wanandroid.utils.RxSchedulers;
 
+import javax.inject.Inject;
+
 /**
  * Date：2018/5/3
  * Desc：
@@ -15,6 +17,11 @@ import com.xulc.wanandroid.utils.RxSchedulers;
 
 public class CollectPresenter extends BasePresenter<CollectContract.View> implements CollectContract.Presenter {
     private int mPage = 0;
+
+    @Inject
+    public CollectPresenter() {
+    }
+
     @Override
     public void loadCollectList() {
         RetrofitManager.getApiService().getCollectList(mPage)

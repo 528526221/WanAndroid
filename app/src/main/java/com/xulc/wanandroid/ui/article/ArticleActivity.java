@@ -30,8 +30,7 @@ public class ArticleActivity extends BaseActivity<ArticleContract.Presenter> imp
 
 
     @Override
-    protected ArticleContract.Presenter getPresenter() {
-        return null;
+    protected void initInjector() {
     }
 
     @Override

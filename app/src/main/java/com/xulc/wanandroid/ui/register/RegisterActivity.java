@@ -23,9 +23,10 @@ public class RegisterActivity extends BaseActivity<RegisterPresenter> implements
     private EditText etConfirmPassword;
     private Button btnRegister;
 
+
     @Override
-    protected RegisterPresenter getPresenter() {
-        return new RegisterPresenter();
+    protected void initInjector() {
+        mActivityComponent.inject(this);
     }
 
     @Override

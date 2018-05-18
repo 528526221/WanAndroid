@@ -9,6 +9,8 @@ import com.xulc.wanandroid.utils.RxSchedulers;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 /**
  * Date：2018/4/12
  * Desc：
@@ -16,6 +18,10 @@ import java.util.List;
  */
 
 public class KnowledgeSystemPresenter extends BasePresenter<KnowledgeSystemContract.View> implements KnowledgeSystemContract.Presenter{
+
+    @Inject
+    public KnowledgeSystemPresenter() {
+    }
 
     @Override
     public void loadKnowledgeSystem() {

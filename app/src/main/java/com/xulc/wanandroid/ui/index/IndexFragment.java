@@ -36,6 +36,10 @@ public class IndexFragment extends BaseLazyFragment<IndexPresenter> implements I
     private LinearLayout lyIndicator;
     private LayoutInflater mLayoutInflater;
 
+    public static IndexFragment newInstance(){
+        return new IndexFragment();
+    }
+
     @Override
     protected int getLayoutId() {
         return R.layout.fragment_index;
@@ -79,10 +83,9 @@ public class IndexFragment extends BaseLazyFragment<IndexPresenter> implements I
     }
 
     @Override
-    protected IndexPresenter getPresenter() {
-        return new IndexPresenter();
+    protected void initInjector() {
+        mFragmentComponent.inject(this);
     }
-
 
 
     @Override

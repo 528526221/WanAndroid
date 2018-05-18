@@ -35,7 +35,7 @@ import io.reactivex.functions.Consumer;
  * Created by xuliangchun.
  */
 
-public class MyFragment extends BaseLazyFragment<MyContract.Presenter> implements View.OnClickListener {
+public class MyFragment extends BaseLazyFragment<MyPresenter> implements View.OnClickListener {
     private LinearLayout lyPersonInfo;
     private TextView tvGoLogin;
     private LinearLayout lyLogout;
@@ -45,6 +45,11 @@ public class MyFragment extends BaseLazyFragment<MyContract.Presenter> implement
     private RecyclerView recyclerView;
     private MyAdapter myAdapter;
     private List<MyAdapter.Item> items;
+
+
+    public static MyFragment newInstance(){
+        return new MyFragment();
+    }
 
     @Override
     protected int getLayoutId() {
@@ -89,8 +94,8 @@ public class MyFragment extends BaseLazyFragment<MyContract.Presenter> implement
     }
 
     @Override
-    protected MyContract.Presenter getPresenter() {
-        return new MyPresenter();
+    protected void initInjector() {
+        mFragmentComponent.inject(this);
     }
 
 

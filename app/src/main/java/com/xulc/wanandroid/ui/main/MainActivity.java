@@ -12,7 +12,6 @@ import android.widget.LinearLayout;
 import com.blankj.utilcode.util.ToastUtils;
 import com.xulc.wanandroid.R;
 import com.xulc.wanandroid.base.BaseActivity;
-import com.xulc.wanandroid.base.BasePresenter;
 import com.xulc.wanandroid.ui.index.IndexFragment;
 import com.xulc.wanandroid.ui.knowledgesystem.KnowledgeSystemFragment;
 import com.xulc.wanandroid.ui.my.MyFragment;
@@ -33,9 +32,15 @@ public class MainActivity extends BaseActivity {
     private List<Fragment> fragments;
     private ValueAnimator animator;
     private boolean isExit = false;
+    //这里曾经很迷茫一个问题，MainFragAdapter并没有在构造或者module提供依赖，但是 @Inject make project并不会报错，
+    //原来是在ActivityComponent中还没有注解该接口
+//    @Inject
+//    MainFragAdapter adapter;
+
+
     @Override
-    protected BasePresenter getPresenter() {
-        return null;
+    protected void initInjector() {
+//        mActivityComponent.inject(this);
     }
 
     @Override
@@ -48,9 +53,9 @@ public class MainActivity extends BaseActivity {
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         lyBottom = (LinearLayout) findViewById(R.id.lyBottom);
         fragments = new ArrayList<>();
-        fragments.add(new IndexFragment());
-        fragments.add(new KnowledgeSystemFragment());
-        fragments.add(new MyFragment());
+        fragments.add(IndexFragment.newInstance());
+        fragments.add(KnowledgeSystemFragment.newInstance());
+        fragments.add(MyFragment.newInstance());
         MainFragAdapter adapter = new MainFragAdapter(getSupportFragmentManager(),fragments);
         viewPager.setAdapter(adapter);
         selectTab(0);

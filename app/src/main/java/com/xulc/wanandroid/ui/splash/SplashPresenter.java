@@ -5,6 +5,8 @@ import android.os.Message;
 
 import com.xulc.wanandroid.base.BasePresenter;
 
+import javax.inject.Inject;
+
 /**
  * Date：2018/2/26
  * Desc：
@@ -12,9 +14,13 @@ import com.xulc.wanandroid.base.BasePresenter;
  */
 
 public class SplashPresenter extends BasePresenter<SplashContract.View> implements SplashContract.Presenter {
+
+
+
     private Handler handler;
     private int count = 3;
 
+    @Inject
     public SplashPresenter() {
         this.handler = new Handler(){
             @Override

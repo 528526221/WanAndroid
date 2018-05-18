@@ -1,16 +1,12 @@
 apply plugin: 'com.android.application'
 
-dependencies {
-    compile 'com.android.support:design:26.+'
-    compile 'com.android.support.constraint:constraint-layout:+'
-}
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.1"
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
     defaultConfig {
         applicationId "com.xulc.wanandroid"
-        minSdkVersion 15
-        targetSdkVersion 26
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -24,16 +20,13 @@ android {
 
     dependencies {
         compile fileTree(dir: 'libs', include: ['*.jar'])
-        androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-            exclude group: 'com.android.support', module: 'support-annotations'
-        })
-        compile 'com.android.support:appcompat-v7:26.+'
-        compile 'com.android.support.constraint:constraint-layout:1.0.2'
         testCompile 'junit:junit:4.12'
+        compile "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
+        compile "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
+        compile 'com.android.support.constraint:constraint-layout:1.0.2'
         compile 'com.tencent.bugly:crashreport:latest.release'
         //其中latest.release指代最新Bugly SDK版本号，也可以指定明确的版本号，例如2.2.0
         compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30'
-        compile 'com.android.support:recyclerview-v7:26.+'
         compile "io.reactivex.rxjava2:rxjava:2.1.1"
         compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
         compile 'com.squareup.retrofit2:retrofit:2.3.0'
@@ -44,6 +37,13 @@ android {
         compile 'com.just.agentweb:agentweb:4.0.2' // (必选)
         compile 'com.github.bumptech.glide:glide:3.7.0'
         compile 'com.github.anzaizai:EasySwipeMenuLayout:1.1.2'
+        // Dagger dependencies
+        annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.daggerVersion"
+        provided 'org.glassfish:javax.annotation:10.0-b28'
+        compile "com.google.dagger:dagger:$rootProject.daggerVersion"
+        compile "com.google.dagger:dagger-android:$rootProject.daggerVersion"
+        compile "com.google.dagger:dagger-android-support:$rootProject.daggerVersion"
+        annotationProcessor "com.google.dagger:dagger-android-processor:$rootProject.daggerVersion"
 
 
     }

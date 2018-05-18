@@ -10,6 +10,8 @@ import com.xulc.wanandroid.utils.RxSchedulers;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 /**
  * Date：2018/4/11
  * Desc：
@@ -18,6 +20,10 @@ import java.util.List;
 
 public class IndexPresenter extends BasePresenter<IndexContract.View> implements IndexContract.Presenter {
     private int mPage = 0;
+
+    @Inject
+    public IndexPresenter() {
+    }
 
     @Override
     public void loadHomeArticles() {

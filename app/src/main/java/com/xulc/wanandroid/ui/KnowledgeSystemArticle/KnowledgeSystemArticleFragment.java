@@ -70,9 +70,10 @@ public class KnowledgeSystemArticleFragment extends BaseLazyFragment<KnowledgeSy
     }
 
     @Override
-    protected KnowledgeSystemArticlePresenter getPresenter() {
-        return new KnowledgeSystemArticlePresenter();
+    protected void initInjector() {
+        mFragmentComponent.inject(this);
     }
+
 
 
     @Override

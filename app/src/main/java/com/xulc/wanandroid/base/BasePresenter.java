@@ -7,6 +7,7 @@ package com.xulc.wanandroid.base;
  */
 
 public class BasePresenter<T extends BaseContract.BaseView> implements BaseContract.BasePresenter<T>{
+
     protected T mView;
 
     @Override

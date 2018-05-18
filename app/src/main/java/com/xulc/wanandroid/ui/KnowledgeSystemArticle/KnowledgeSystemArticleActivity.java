@@ -23,9 +23,10 @@ public class KnowledgeSystemArticleActivity extends BaseActivity{
     private PageTabIndicator tabIndicator;
     private ViewPager viewPager;
 
+
     @Override
-    protected KnowledgeSystemArticleContract.Presenter getPresenter() {
-        return null;
+    protected void initInjector() {
+
     }
 
     @Override

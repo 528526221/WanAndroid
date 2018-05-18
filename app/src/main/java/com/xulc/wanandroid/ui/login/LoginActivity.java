@@ -20,9 +20,10 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
     private EditText etUserName;
     private EditText etPassword;
     private Button btnLogin;
+
     @Override
-    protected LoginPresenter getPresenter() {
-        return new LoginPresenter();
+    protected void initInjector() {
+        mActivityComponent.inject(this);
     }
 
     @Override

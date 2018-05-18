@@ -11,10 +11,9 @@ import com.xulc.wanandroid.ui.main.MainActivity;
 public class SplashActivity extends BaseActivity<SplashPresenter> implements SplashContract.View {
     private TextView tvSkip;
 
-
     @Override
-    protected SplashPresenter getPresenter() {
-        return new SplashPresenter();
+    protected void initInjector() {
+        mActivityComponent.inject(this);
     }
 
     @Override

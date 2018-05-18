@@ -10,6 +10,10 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.xulc.wanandroid.R;
+import com.xulc.wanandroid.di.component.ActivityComponent;
+import com.xulc.wanandroid.di.component.DaggerActivityComponent;
+
+import javax.inject.Inject;
 
 /**
  * Date：2018/2/26
@@ -18,7 +22,9 @@ import com.xulc.wanandroid.R;
  */
 
 public abstract class BaseActivity<T extends BaseContract.BasePresenter> extends AppCompatActivity implements BaseContract.BaseView {
+    @Inject
     protected T mPresenter;
+    protected ActivityComponent mActivityComponent;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -32,9 +38,9 @@ public abstract class BaseActivity<T extends BaseContract.BasePresenter> extends
         } else {
             //4.4以下不作处理
         }
+        mActivityComponent = DaggerActivityComponent.builder().build();
 
-
-        mPresenter = getPresenter();
+        initInjector();
 
         attachView();
 
@@ -47,7 +53,7 @@ public abstract class BaseActivity<T extends BaseContract.BasePresenter> extends
         detachView();
     }
 
-    protected abstract T getPresenter();
+    protected abstract void initInjector();
 
     protected abstract int getLayoutId();
 

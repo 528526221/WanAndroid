@@ -12,6 +12,8 @@ import com.xulc.wanandroid.net.RetrofitManager;
 import com.xulc.wanandroid.utils.RxSchedulers;
 import com.xulc.wanandroid.utils.UserUtil;
 
+import javax.inject.Inject;
+
 /**
  * Date：2018/4/17
  * Desc：
@@ -19,6 +21,11 @@ import com.xulc.wanandroid.utils.UserUtil;
  */
 
 public class LoginPresenter extends BasePresenter<LoginContract.View> implements LoginContract.Presenter {
+
+
+    @Inject
+    public LoginPresenter() {
+    }
 
     @Override
     public void login(String username, String password) {

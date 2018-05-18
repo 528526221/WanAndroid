@@ -21,7 +21,7 @@ import java.util.List;
  * Created by xuliangchun.
  */
 
-public class KnowledgeSystemFragment extends BaseLazyFragment<KnowledgeSystemContract.Presenter> implements KnowledgeSystemContract.View {
+public class KnowledgeSystemFragment extends BaseLazyFragment<KnowledgeSystemPresenter> implements KnowledgeSystemContract.View {
     private RecyclerView recyclerViewTop;
     private RecyclerView recyclerViewSecond;
     private KnowledgeSystemTopAdapter topAdapter;
@@ -31,7 +31,9 @@ public class KnowledgeSystemFragment extends BaseLazyFragment<KnowledgeSystemCon
     private boolean scrollToTop = false;
     private int scrollRightPosition;//右侧列表想要滚动到达的位置
 
-
+    public static KnowledgeSystemFragment newInstance(){
+        return new KnowledgeSystemFragment();
+    }
     @Override
     protected int getLayoutId() {
         return R.layout.fragment_knowledge_system;
@@ -108,11 +110,11 @@ public class KnowledgeSystemFragment extends BaseLazyFragment<KnowledgeSystemCon
         });
     }
 
-
     @Override
-    protected KnowledgeSystemContract.Presenter getPresenter() {
-        return new KnowledgeSystemPresenter();
+    protected void initInjector() {
+        mFragmentComponent.inject(this);
     }
+
 
     @Override
     public void setKnowledgeSystem(List<KnowledgeSystem> systemList) {
