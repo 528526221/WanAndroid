@@ -2,6 +2,7 @@ package com.xulc.wanandroid.ui.article;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.text.Html;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebSettings;
@@ -52,7 +53,7 @@ public class ArticleActivity extends BaseActivity<ArticleContract.Presenter> imp
         });
         String title = getIntent().getStringExtra("title");
         String link = getIntent().getStringExtra("link");
-        titleBar.setTitle(title);
+        titleBar.setTitle(Html.fromHtml(title));
         mAgentWeb = AgentWeb.with(this)
                 .setAgentWebParent(webContent, new LinearLayout.LayoutParams(-1, -1))
                 .useDefaultIndicator()

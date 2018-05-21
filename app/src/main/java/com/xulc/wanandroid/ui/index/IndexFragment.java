@@ -17,6 +17,7 @@ import com.xulc.wanandroid.base.BaseLazyFragment;
 import com.xulc.wanandroid.bean.ArticleData;
 import com.xulc.wanandroid.bean.Banner;
 import com.xulc.wanandroid.net.Constant;
+import com.xulc.wanandroid.ui.query.QueryActivity;
 import com.xulc.wanandroid.ui.article.ArticleActivity;
 import com.xulc.wanandroid.view.CyclicViewPager;
 
@@ -35,6 +36,7 @@ public class IndexFragment extends BaseLazyFragment<IndexPresenter> implements I
     private CyclicViewPager bannerView;
     private LinearLayout lyIndicator;
     private LayoutInflater mLayoutInflater;
+    private ImageView ivQuery;
 
     public static IndexFragment newInstance(){
         return new IndexFragment();
@@ -53,6 +55,7 @@ public class IndexFragment extends BaseLazyFragment<IndexPresenter> implements I
         swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent,R.color.black,R.color.red);
 //        swipeRefreshLayout.setProgressBackgroundColorSchemeResource(R.color.white);
         recyclerView = mRootView.findViewById(R.id.recyclerView);
+        ivQuery = mRootView.findViewById(R.id.ivQuery);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.addItemDecoration(new IndexDecoration());
         indexAdapter = new IndexAdapter(getContext());
@@ -79,6 +82,12 @@ public class IndexFragment extends BaseLazyFragment<IndexPresenter> implements I
         },recyclerView);
 
         swipeRefreshLayout.setRefreshing(true);
+        ivQuery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), QueryActivity.class));
+            }
+        });
 
     }
 

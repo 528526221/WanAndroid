@@ -53,9 +53,10 @@ public abstract class BaseActivity<T extends BaseContract.BasePresenter> extends
         detachView();
     }
 
-    protected abstract void initInjector();
 
     protected abstract int getLayoutId();
+
+    protected abstract void initInjector();
 
     protected abstract void initView();
 

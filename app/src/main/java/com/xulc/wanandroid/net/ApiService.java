@@ -3,6 +3,8 @@ package com.xulc.wanandroid.net;
 import com.xulc.wanandroid.bean.ArticleData;
 import com.xulc.wanandroid.bean.Banner;
 import com.xulc.wanandroid.base.BaseResponse;
+import com.xulc.wanandroid.bean.FriendWeb;
+import com.xulc.wanandroid.bean.HotKey;
 import com.xulc.wanandroid.bean.KnowledgeSystem;
 import com.xulc.wanandroid.bean.User;
 
@@ -39,6 +41,22 @@ public interface ApiService {
      */
     @GET("/banner/json")
     Observable<BaseResponse<List<Banner>>> getHomeBanners();
+
+
+    /**
+     * 1.3 常用网站
+     * @return
+     */
+    @GET("/friend/json")
+    Observable<BaseResponse<List<FriendWeb>>> getFriendWeb();
+
+    /**
+     * 1.4搜索热词
+     * @return
+     */
+    @GET("/hotkey/json")
+    Observable<BaseResponse<List<HotKey>>> getHotKey();
+
 
     //2.知识体系
 
@@ -131,6 +149,16 @@ public interface ApiService {
     @POST("/lg/uncollect/{id}/json")
     Observable<BaseResponse> removeCollectArticle(@Path("id") int id,@Field("originId") int originId);
 
+    //7. 搜索
+    /**
+     * 7.1 搜索
+     * @param page
+     * @param k
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("/article/query/{page}/json")
+    Observable<BaseResponse<ArticleData>> query(@Path("page") int page,@Field("k") String k);
 
 }
 

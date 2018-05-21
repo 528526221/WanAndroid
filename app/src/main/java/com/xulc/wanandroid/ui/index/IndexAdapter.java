@@ -2,6 +2,7 @@ package com.xulc.wanandroid.ui.index;
 
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
+import android.text.Html;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
@@ -26,7 +27,7 @@ public class IndexAdapter extends BaseQuickAdapter<ArticleData.Article, BaseView
     protected void convert(BaseViewHolder helper, ArticleData.Article item) {
         helper.setText(R.id.tvAuthor, item.getAuthor())
                 .setText(R.id.tvDate, item.getNiceDate())
-                .setText(R.id.tvTitle, item.getTitle())
+                .setText(R.id.tvTitle, Html.fromHtml(item.getTitle()))
                 .setText(R.id.tvChapter, item.getSuperChapterName() + "/" + item.getChapterName())
                 .setVisible(R.id.tvIdentify, item.isFresh() || item.getTags().size() > 0)
                 .setText(R.id.tvIdentify, item.isFresh() ? "新" : (item.getTags().size() > 0 ? item.getTags().get(0).getName() : ""))

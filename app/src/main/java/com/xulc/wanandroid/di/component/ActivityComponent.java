@@ -3,6 +3,8 @@ package com.xulc.wanandroid.di.component;
 import com.xulc.wanandroid.di.module.ActivityModule;
 import com.xulc.wanandroid.ui.Collect.CollectActivity;
 import com.xulc.wanandroid.ui.login.LoginActivity;
+import com.xulc.wanandroid.ui.query.QueryActivity;
+import com.xulc.wanandroid.ui.queryresult.QueryResultActivity;
 import com.xulc.wanandroid.ui.register.RegisterActivity;
 import com.xulc.wanandroid.ui.splash.SplashActivity;
 
@@ -23,5 +25,6 @@ public interface ActivityComponent {
     void inject(LoginActivity activity);
     void inject(RegisterActivity activity);
     void inject(CollectActivity activity);
-
+    void inject(QueryActivity activity);
+    void inject(QueryResultActivity activity);
 }

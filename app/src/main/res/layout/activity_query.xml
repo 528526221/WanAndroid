@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <com.xulc.wanandroid.view.TitleBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:title="搜索"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp45">
+        <ImageView
+            android:id="@+id/ivQueryIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/search_gray"
+            android:layout_marginLeft="@dimen/dp10"
+            android:layout_gravity="center_vertical" />
+        <EditText
+            android:id="@+id/etQuery"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp45"
+            android:hint="搜索关键词以空格形式隔开"
+            android:textColorHint="@color/c999999"
+            android:paddingLeft="@dimen/dp10"
+            android:textSize="@dimen/sp_14"
+            android:background="@null"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:textColor="@color/c454545"/>
+    </LinearLayout>
+    
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/line"/>
+
+    <com.xulc.wanandroid.view.IrregularLayout
+        android:id="@+id/irregularLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/dp10"
+        app:ItemHorSpace="@dimen/dp10"
+        app:ItemVerSpace="@dimen/dp10"/>
+</LinearLayout>

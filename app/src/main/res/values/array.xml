@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="shape_color_array">
+        <item>#3eafe4</item>
+        <item>#f49776</item>
+        <item>#86864a</item>
+        <item>#5e488b</item>
+        <item>#ed6b0d</item>
+    </string-array>
+</resources>
