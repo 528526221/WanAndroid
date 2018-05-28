@@ -5,6 +5,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -17,11 +18,13 @@ import com.xulc.wanandroid.base.BaseLazyFragment;
 import com.xulc.wanandroid.bean.ArticleData;
 import com.xulc.wanandroid.bean.Banner;
 import com.xulc.wanandroid.net.Constant;
-import com.xulc.wanandroid.ui.query.QueryActivity;
 import com.xulc.wanandroid.ui.article.ArticleActivity;
+import com.xulc.wanandroid.ui.query.QueryActivity;
 import com.xulc.wanandroid.view.CyclicViewPager;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 /**
  * Date：2018/4/10
@@ -37,6 +40,8 @@ public class IndexFragment extends BaseLazyFragment<IndexPresenter> implements I
     private LinearLayout lyIndicator;
     private LayoutInflater mLayoutInflater;
     private ImageView ivQuery;
+    @Inject
+    String packageName;
 
     public static IndexFragment newInstance(){
         return new IndexFragment();
@@ -88,6 +93,8 @@ public class IndexFragment extends BaseLazyFragment<IndexPresenter> implements I
                 startActivity(new Intent(getActivity(), QueryActivity.class));
             }
         });
+
+        Log.i("xlc","packageName="+packageName);
 
     }
 

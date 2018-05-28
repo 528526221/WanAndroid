@@ -38,9 +38,10 @@ public class MainActivity extends BaseActivity {
 //    MainFragAdapter adapter;
 
 
+
     @Override
     protected void initInjector() {
-//        mActivityComponent.inject(this);
+
     }
 
     @Override

@@ -7,8 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.xulc.wanandroid.di.component.DaggerFragmentComponent;
+import com.xulc.wanandroid.di.component.DaggerApplicationComponent;
 import com.xulc.wanandroid.di.component.FragmentComponent;
+import com.xulc.wanandroid.di.module.ApplicationModule;
 
 import javax.inject.Inject;
 
@@ -30,7 +31,9 @@ public abstract class BaseLazyFragment<T extends BaseContract.BasePresenter> ext
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mFragmentComponent = DaggerFragmentComponent.builder().build();
+//        mFragmentComponent = DaggerFragmentComponent.builder().build();
+        mFragmentComponent = DaggerApplicationComponent.builder().applicationModule(new ApplicationModule(App.getAppContext())).build().buildFragmentComponent().build();
+
         initInjector();
         attachView();
     }

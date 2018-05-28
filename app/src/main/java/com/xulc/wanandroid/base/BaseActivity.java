@@ -11,7 +11,8 @@ import android.view.WindowManager;
 
 import com.xulc.wanandroid.R;
 import com.xulc.wanandroid.di.component.ActivityComponent;
-import com.xulc.wanandroid.di.component.DaggerActivityComponent;
+import com.xulc.wanandroid.di.component.DaggerApplicationComponent;
+import com.xulc.wanandroid.di.module.ApplicationModule;
 
 import javax.inject.Inject;
 
@@ -38,7 +39,9 @@ public abstract class BaseActivity<T extends BaseContract.BasePresenter> extends
         } else {
             //4.4以下不作处理
         }
-        mActivityComponent = DaggerActivityComponent.builder().build();
+//        mActivityComponent = DaggerActivityComponent.builder().build();
+        //一个component依赖另一个component的方法有两种，一种通过Subcomponent,一种通过dependencies
+        mActivityComponent = DaggerApplicationComponent.builder().applicationModule(new ApplicationModule(App.getAppContext())).build().buildActivityComponent().build();
 
         initInjector();
 
