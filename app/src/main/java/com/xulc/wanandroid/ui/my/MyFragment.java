@@ -80,7 +80,12 @@ public class MyFragment extends BaseLazyFragment<MyPresenter> implements View.On
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 String name = myAdapter.getData().get(position).getName();
                 if (name.equals("我的收藏")){
-                    startActivity(new Intent(getActivity(), CollectActivity.class));
+                    if (SPUtils.getInstance().getBoolean(Constant.IS_LOGIN)){
+                        startActivity(new Intent(getActivity(), CollectActivity.class));
+                    }else {
+                        startActivity(new Intent(getActivity(), LoginActivity.class));
+                    }
+
 
                 }else if (name.equals("关于")){
                     startActivity(new Intent(getActivity(), AboutActivity.class));
