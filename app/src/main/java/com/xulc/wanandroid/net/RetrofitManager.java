@@ -142,7 +142,7 @@ public class RetrofitManager {
      * @param <T>
      * @return
      */
-    private static <T> T create(Class<T> clazz) {
+    public static <T> T create(Class<T> clazz) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Constant.REQUEST_BASE_URL)
                 .client(getOkHttpClient())
