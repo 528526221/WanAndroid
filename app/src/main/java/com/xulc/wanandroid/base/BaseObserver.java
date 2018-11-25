@@ -24,12 +24,16 @@ public abstract class BaseObserver<T> implements Observer<BaseResponse<T>> {
 
     @Override
     public void onNext(@NonNull BaseResponse<T> tBaseResponse) {
-        if (tBaseResponse.getErrorCode() == 0){
-            onSuccess(tBaseResponse);
-        }else {
-            onFail(tBaseResponse);
-            ToastUtils.showShort(tBaseResponse.getErrorMsg());
+        try {
+            if (tBaseResponse.getErrorCode() == 0){
+                onSuccess(tBaseResponse);
+            }else {
+                onFail(tBaseResponse);
+                ToastUtils.showShort(tBaseResponse.getErrorMsg());
 
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 

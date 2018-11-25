@@ -28,7 +28,7 @@ public class LoginPresenter extends BasePresenter<LoginContract.View> implements
     }
 
     @Override
-    public void login(String username, String password) {
+    public void login(String username, final String password) {
         if (TextUtils.isEmpty(username)){
             mView.inputError("用户名嘞~");
             return;
@@ -37,13 +37,16 @@ public class LoginPresenter extends BasePresenter<LoginContract.View> implements
             mView.inputError("密码嘞~");
             return;
         }
+
         RetrofitManager.getApiService().loginAccount(username,password)
                 .compose(RxSchedulers.<BaseResponse<User>>applySchedulers())
                 .subscribe(new BaseObserver<User>() {
                     @Override
                     protected void onSuccess(BaseResponse<User> userBaseResponse) {
                         if (userBaseResponse.getErrorCode()==0){
-                            UserUtil.getInstance().setUser(userBaseResponse.getData());
+                            User user = userBaseResponse.getData();
+                            user.setPassword(password);
+                            UserUtil.getInstance().setUser(user);
                             SPUtils.getInstance().put(Constant.IS_LOGIN,true);
                             mView.loginSuccess();
                         }else {

@@ -23,7 +23,7 @@ android {
         testCompile 'junit:junit:4.12'
         compile "com.android.support:appcompat-v7:$rootProject.supportLibraryVersion"
         compile "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
-        compile 'com.android.support.constraint:constraint-layout:1.0.2'
+//        compile 'com.android.support.constraint:constraint-layout:1.0.2'
         compile 'com.tencent.bugly:crashreport:latest.release'
         //其中latest.release指代最新Bugly SDK版本号，也可以指定明确的版本号，例如2.2.0
         compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30'
@@ -44,7 +44,17 @@ android {
         compile "com.google.dagger:dagger-android:$rootProject.daggerVersion"
         compile "com.google.dagger:dagger-android-support:$rootProject.daggerVersion"
         annotationProcessor "com.google.dagger:dagger-android-processor:$rootProject.daggerVersion"
+        debugCompile 'com.squareup.leakcanary:leakcanary-android:1.6.2',{
+            exclude group: 'com.android.support'
+        }
+        releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.2',{
+            exclude group: 'com.android.support'
+        }
 
+        // Optional, if you use support library fragments:
+        debugCompile 'com.squareup.leakcanary:leakcanary-support-fragment:1.6.2',{
+            exclude group: 'com.android.support'
+        }
 
     }
 }

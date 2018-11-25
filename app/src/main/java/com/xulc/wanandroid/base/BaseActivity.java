@@ -52,8 +52,8 @@ public abstract class BaseActivity<T extends BaseContract.BasePresenter> extends
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         detachView();
+        super.onDestroy();
     }
 
 

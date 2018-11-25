@@ -28,23 +28,26 @@ public class LoginUtil {
     }
 
     public void login(){
-        if (UserUtil.getInstance().getUser() == null){
-            return;
-        }
-        RetrofitManager.getApiService().loginAccount(UserUtil.getInstance().getUser().getUsername(),UserUtil.getInstance().getUser().getPassword())
-                .compose(RxSchedulers.<BaseResponse<User>>applySchedulers())
-                .subscribe(new BaseObserver<User>() {
-                    @Override
-                    protected void onSuccess(BaseResponse<User> userBaseResponse) {
-                        UserUtil.getInstance().setUser(userBaseResponse.getData());
-                        SPUtils.getInstance().put(Constant.IS_LOGIN,true);
-                        RxBus.getInstance().post(new RxLoginEvent(""));
-                    }
+        if ((SPUtils.getInstance().getBoolean(Constant.IS_LOGIN)) && UserUtil.getInstance().getUser() != null){
+            RetrofitManager.getApiService().loginAccount(UserUtil.getInstance().getUser().getUsername(),UserUtil.getInstance().getUser().getPassword())
+                    .compose(RxSchedulers.<BaseResponse<User>>applySchedulers())
+                    .subscribe(new BaseObserver<User>() {
+                        @Override
+                        protected void onSuccess(BaseResponse<User> userBaseResponse) {
+                            User user = userBaseResponse.getData();
+                            user.setPassword(UserUtil.getInstance().getUser().getPassword());
+                            UserUtil.getInstance().setUser(user);
+                            SPUtils.getInstance().put(Constant.IS_LOGIN,true);
+                            RxBus.getInstance().post(new RxLoginEvent(""));
+                        }
 
-                    @Override
-                    protected void onFail(BaseResponse<User> userBaseResponse) {
+                        @Override
+                        protected void onFail(BaseResponse<User> userBaseResponse) {
+                            if (userBaseResponse.getErrorCode() == -1){
+                                SPUtils.getInstance().put(Constant.IS_LOGIN,false);
+                            }
+                        }
+                    });        }
 
-                    }
-                });
     }
 }

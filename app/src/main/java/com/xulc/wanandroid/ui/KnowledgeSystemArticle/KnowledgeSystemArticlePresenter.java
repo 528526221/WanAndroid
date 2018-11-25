@@ -1,5 +1,7 @@
 package com.xulc.wanandroid.ui.KnowledgeSystemArticle;
 
+import android.util.Log;
+
 import com.xulc.wanandroid.base.BaseObserver;
 import com.xulc.wanandroid.base.BasePresenter;
 import com.xulc.wanandroid.base.BaseResponse;
@@ -8,6 +10,10 @@ import com.xulc.wanandroid.net.RetrofitManager;
 import com.xulc.wanandroid.utils.RxSchedulers;
 
 import javax.inject.Inject;
+
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
 
 /**
  * Date：2018/4/16
@@ -24,17 +30,30 @@ public class KnowledgeSystemArticlePresenter extends BasePresenter<KnowledgeSyst
     }
 
     private void loadKnowledgeSystemArticles(int cid) {
+//        RetrofitManager.getApiService().getKnowledgeArticles(page,cid)
+//                .compose(RxSchedulers.<BaseResponse<ArticleData>>applySchedulers())
+//                .subscribe(new BaseObserver<ArticleData>() {
+//                    @Override
+//                    protected void onSuccess(BaseResponse<ArticleData> articleDataBaseResponse) {
+//                        mView.setArticles(articleDataBaseResponse.getData(), isRefresh);
+//                    }
+//
+//                    @Override
+//                    protected void onFail(BaseResponse<ArticleData> articleDataBaseResponse) {
+//
+//                    }
+//                });
         RetrofitManager.getApiService().getKnowledgeArticles(page,cid)
                 .compose(RxSchedulers.<BaseResponse<ArticleData>>applySchedulers())
-                .subscribe(new BaseObserver<ArticleData>() {
+                .subscribe(new Consumer<BaseResponse<ArticleData>>() {
                     @Override
-                    protected void onSuccess(BaseResponse<ArticleData> articleDataBaseResponse) {
-                        mView.setArticles(articleDataBaseResponse.getData(),isRefresh);
+                    public void accept(@NonNull BaseResponse<ArticleData> articleDataBaseResponse) throws Exception {
+                        mView.setArticles(articleDataBaseResponse.getData(), page == 1);
                     }
-
+                }, new Consumer<Throwable>() {
                     @Override
-                    protected void onFail(BaseResponse<ArticleData> articleDataBaseResponse) {
-
+                    public void accept(@NonNull Throwable throwable) throws Exception {
+                        Log.i("xlc","我们出错了！！！！！！！！！！");
                     }
                 });
 
@@ -90,5 +109,8 @@ public class KnowledgeSystemArticlePresenter extends BasePresenter<KnowledgeSyst
         }
     }
 
-
+    @Override
+    public void detachView() {
+        super.detachView();
+    }
 }

@@ -6,6 +6,7 @@ import android.support.v4.content.ContextCompat;
 
 import com.blankj.utilcode.util.ToastUtils;
 import com.blankj.utilcode.util.Utils;
+import com.squareup.leakcanary.LeakCanary;
 import com.tencent.bugly.crashreport.CrashReport;
 import com.xulc.wanandroid.R;
 
@@ -22,11 +23,11 @@ public class App extends Application {
         super.onCreate();
         context = getApplicationContext();
 
-        CrashReport.initCrashReport(getApplicationContext(), "7c22ff2be7", false);
+//        CrashReport.initCrashReport(getApplicationContext(), "7c22ff2be7", false);
 
         Utils.init(this);
         ToastUtils.setMsgColor(ContextCompat.getColor(this,R.color.bottom_text_focus));
-
+        LeakCanary.install(this);
     }
 
     public static Context getAppContext() {
