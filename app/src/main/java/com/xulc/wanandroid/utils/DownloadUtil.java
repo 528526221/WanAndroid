@@ -26,7 +26,7 @@ import okhttp3.ResponseBody;
  * Desc: 文件下载工具类
  */
 public class DownloadUtil {
-    private static final String DOWNLOAD_DIR_NAME = "/hikvision/download/";//下载文件保存目录
+    private static final String DOWNLOAD_DIR_NAME = "/wanandroid/download/";//下载文件保存目录
     private static DownloadService downloadService;
     private DownloadUtil() { }
 

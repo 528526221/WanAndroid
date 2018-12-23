@@ -1,0 +1,866 @@
+
+/**
+ * Date：2018/11/20
+ * Author: xuliangchun
+ * Desc: 文件下载工具类
+ */
+public class DownloadUtil {
+    private static final String DOWNLOAD_DIR_NAME = "/xulc/download/";//下载文件保存目录
+    private static DownloadService downloadService;
+    private DownloadUtil() { }
+
+    private static class SingletonInstance {
+        private static final DownloadUtil INSTANCE = new DownloadUtil();
+    }
+
+    public static DownloadUtil getInstance(){
+        return SingletonInstance.INSTANCE;
+    }
+
+    /**
+     * 获取下载接口类
+     * @return DownloadService
+     */
+    private DownloadService getDownloadService(){
+        if (downloadService == null){
+            synchronized (HikRetrofit.class){
+                if (downloadService == null){
+                    downloadService  = HikRetrofit.create(DownloadService.class);
+                }
+            }
+        }
+        return downloadService;
+    }
+
+    /**
+     * 下载文件
+     * @param url 网络文件地址全路径
+     * @param fileName 保存到本地的文件名称
+     * @param listener 下载监听回调
+     */
+    public void downloadFile(String url, final String fileName, final DownloadListener listener) {
+        getDownloadService().downloadFile(url).observeOn(Schedulers.io()).subscribeOn(Schedulers.io())
+                .subscribe(new Observer<ResponseBody>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        listener.onStart();
+                    }
+
+                    @Override
+                    public void onNext(ResponseBody responseBody) {
+                        saveResponseToFile(fileName, responseBody, listener);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        listener.onFail(e.getMessage());
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+    /**
+     * 保存响应到文件
+     * @param fileName
+     * @param responseBody
+     * @param listener
+     */
+    private void saveResponseToFile(String fileName, ResponseBody responseBody, DownloadListener listener) {
+        File mFile = new File(Environment.getExternalStorageDirectory() + DOWNLOAD_DIR_NAME + fileName);
+        if (mFile.getParentFile().exists()){
+            if (mFile.exists() && mFile.delete()){
+                Log.i(Constant.TAG,"删除历史文件成功.");
+            }
+        }else {
+            if (mFile.getParentFile().mkdirs()){
+                Log.i(Constant.TAG,"创建目录成功.");
+            }else {
+                Log.i(Constant.TAG,"创建目录失败.");
+                listener.onFail("创建目录失败");
+                return;
+            }
+        }
+        int sBufferSize = 2048;
+        //从response获取输入流以及总大小
+        InputStream is = responseBody.byteStream();
+        OutputStream os = null;
+        try {
+            if (mFile.createNewFile()){
+                long currentLength = 0;
+                os = new BufferedOutputStream(new FileOutputStream(mFile));
+                byte[] bytes = new byte[sBufferSize];
+                int len;
+                while ((len = is.read(bytes,0,sBufferSize)) != -1){
+                    os.write(bytes,0,len);
+                    currentLength += len;
+                    //计算当前下载进度
+                    listener.onProgress((int) (100 * currentLength / responseBody.contentLength()));
+                }
+                //下载完成，并返回保存的文件路径
+                listener.onFinish(mFile.getAbsolutePath());
+            }else {
+                listener.onFail("创建文件失败");
+                Log.i(Constant.TAG,"创建文件失败.");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            listener.onFail(e.getMessage());
+            Log.i(Constant.TAG,"写入文件IO出错.");
+        } finally {
+            try {
+                is.close();
+                if (os != null){
+                    os.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    public interface DownloadListener {
+        void onStart();//下载开始
+
+        void onProgress(int progress);//下载进度
+
+        void onFinish(String path);//下载完成
+
+        void onFail(String message);//下载失败
+    }
+}
+
+
+
+
+
+
+
+
+
+------------------------------------------------------
+
+
+
+/**
+ * Date：2018/11/20
+ * Author: xuliangchun
+ * Desc: 文件上传工具类
+ */
+public class UploadUtil {
+    private static UploadService uploadService;
+    private UploadUtil(){}
+    private static class SingletonInstance {
+        private static final UploadUtil INSTANCE = new UploadUtil();
+    }
+    public static UploadUtil getInstance(){
+        return SingletonInstance.INSTANCE;
+    }
+    /**
+     * 获取上传接口类
+     * @return UploadService
+     */
+    private UploadService getUploadService(){
+        if (uploadService == null){
+            synchronized (HikRetrofit.class){
+                if (uploadService == null){
+                    uploadService  = HikRetrofit.create(UploadService.class);
+                }
+            }
+        }
+        return uploadService;
+    }
+
+    /**
+     * 上传文件
+     * @param filePath 文件本地路径
+     * @param listener 上传监听回调
+     */
+    public void uploadImage(String filePath, final UploadListener listener){
+        File file = new File(filePath);
+        //表单上传
+        RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+        FileRequestBody fileRequestBody = new FileRequestBody(requestBody,listener);
+        MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), fileRequestBody);
+        listener.onStart();
+        getUploadService().uploadImage(part)
+                .compose(RxSchedulers.<BaseResponse<UploadImageData>>applySchedulers())
+                .subscribe(new BaseObserver<UploadImageData>() {
+                    @Override
+                    protected void onSuccess(BaseResponse<UploadImageData> uploadImageDataBaseResponse) {
+                        listener.onFinish(uploadImageDataBaseResponse.getData().getPhotoUrl());
+                    }
+
+                    @Override
+                    protected void onFail(BaseResponse<UploadImageData> uploadImageDataBaseResponse) {
+                        listener.onFail(uploadImageDataBaseResponse.getMessage());
+                    }
+                });
+
+
+
+    }
+
+    public interface UploadListener {
+        void onStart();//上传开始
+
+        void onProgress(int progress);//上传进度
+
+        void onFinish(String photoUrl);//上传完成
+
+        void onFail(String message);//上传失败
+    }
+}
+
+
+------------------------------------------------------
+
+
+
+
+/**
+ * Date：2018/11/20
+ * Author: xuliangchun
+ * Desc: 文件上传接口
+ * 请直接使用
+ * @see com.hik.base.utils.UploadUtil 上传
+ */
+public interface UploadService {
+    @Multipart
+    @POST("sn/mobileuploadimage")
+    Observable<BaseResponse<UploadImageData>> uploadImage(@Part MultipartBody.Part part);//上传文件
+}
+
+
+----------------------------------------------------------
+
+
+/**
+ * Date：2018/11/16
+ * Author: xuliangchun
+ * Desc: Cookie管理类
+ */
+public class CookiesManager implements CookieJar {
+
+    public static final PersistentCookieStore cookieStore = new PersistentCookieStore();
+
+    @Override
+    public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
+        for (Cookie item : cookies) {
+            cookieStore.add(url, item);
+        }
+    }
+
+    @Override
+    public List<Cookie> loadForRequest(HttpUrl url) {
+        return cookieStore.get();
+    }
+
+    /**
+     * 清除所有cookie
+     */
+    public static void clearAllCookies() {
+        cookieStore.removeAll();
+    }
+
+}
+
+
+------------------------------------------------------------
+
+
+**
+ * Date：2018/11/16
+ * Author: xuliangchun
+ * Desc: Cookie存储类
+ * 本地化的思路是：1、COOKIE_NAME_STORE中会存储所有的cookie的key拼接的字符串 2、key 再对应cookie存储
+ */
+public class PersistentCookieStore {
+    private static final String LOG_TAG = "PersistentCookieStore";
+    private static final String COOKIE_PREFS = "Cookies_Prefs";
+    private static final String COOKIE_NAME_STORE = "names";
+    private static final String COOKIE_NAME_PREFIX = "cookie_";
+    private final ConcurrentMap<String, Cookie> cookies;
+    private final SharedPreferences cookiePrefs;
+
+    PersistentCookieStore() {
+        cookiePrefs = BaseApplication.getAppContext().getSharedPreferences(COOKIE_PREFS, Context.MODE_PRIVATE);
+        cookies = new ConcurrentHashMap<>();
+        //将本地持久化的cookie恢复到内存中
+        String storedCookieNames = cookiePrefs.getString(COOKIE_NAME_STORE, null);
+        if (storedCookieNames != null) {
+            String[] cookieNames = TextUtils.split(storedCookieNames, ",");
+            for (String name : cookieNames) {
+                String encodedCookie = cookiePrefs.getString(COOKIE_NAME_PREFIX + name, null);
+                if (encodedCookie != null) {
+                    Cookie decodedCookie = decodeCookie(encodedCookie);
+                    if (decodedCookie != null) {
+                        cookies.put(name, decodedCookie);
+                    }
+                }
+            }
+        }
+
+    }
+
+    /**
+     * 考虑到实际需求，放弃使用url作为key，采用cookie的name作为key
+     * @param url
+     * @param cookie
+     */
+    public void add(HttpUrl url, Cookie cookie) {
+        String name = cookie.name();
+        //将cookies缓存到内存中 如果缓存过期 就重置此cookie
+        if (cookie.persistent()) {
+            cookies.remove(name);
+        } else {
+            cookies.put(name, cookie);
+        }
+        //缓存到本地
+        SharedPreferences.Editor editor = cookiePrefs.edit();
+        Set<String> cookieKey = cookies.keySet();
+        String store = TextUtils.join(",", cookieKey);
+        editor.putString(COOKIE_NAME_STORE, store);
+        editor.putString(COOKIE_NAME_PREFIX + name, encodeCookie(new OkHttpCookies(cookie)));
+        editor.apply();
+    }
+
+    public List<Cookie> get() {
+        return new ArrayList<>(cookies.values());
+    }
+
+    /**
+     *移除所有cookie
+     */
+    void removeAll() {
+        //清除内存和本地
+        cookies.clear();
+        SharedPreferences.Editor editor = cookiePrefs.edit();
+        for (String name : cookies.keySet()) {
+            editor.remove(COOKIE_NAME_PREFIX + name);
+        }
+        editor.remove(COOKIE_NAME_STORE);
+        editor.apply();
+
+    }
+
+    /**
+     * cookies 序列化成 string
+     * @param cookie 要序列化的cookie
+     * @return 序列化之后的string
+     */
+    protected String encodeCookie(OkHttpCookies cookie) {
+        if (cookie == null)
+            return null;
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        try {
+            ObjectOutputStream outputStream = new ObjectOutputStream(os);
+            outputStream.writeObject(cookie);
+        } catch (IOException e) {
+            Log.d(LOG_TAG, "IOException in encodeCookie", e);
+            return null;
+        }
+
+        return byteArrayToHexString(os.toByteArray());
+    }
+
+    /**
+     * 将字符串反序列化成cookies
+     * @param cookieString cookies string
+     * @return cookie object
+     */
+    protected Cookie decodeCookie(String cookieString) {
+        byte[] bytes = hexStringToByteArray(cookieString);
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+        Cookie cookie = null;
+        try {
+            ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
+            cookie = ((OkHttpCookies) objectInputStream.readObject()).getCookies();
+        } catch (IOException e) {
+            Log.d(LOG_TAG, "IOException in decodeCookie", e);
+        } catch (ClassNotFoundException e) {
+            Log.d(LOG_TAG, "ClassNotFoundException in decodeCookie", e);
+        }
+
+        return cookie;
+    }
+
+    /**
+     * 二进制数组转十六进制字符串
+     * @param bytes byte array to be converted
+     * @return string containing hex values
+     */
+    protected String byteArrayToHexString(byte[] bytes) {
+        StringBuilder sb = new StringBuilder(bytes.length * 2);
+        for (byte element : bytes) {
+            int v = element & 0xff;
+            if (v < 16) {
+                sb.append('0');
+            }
+            sb.append(Integer.toHexString(v));
+        }
+        return sb.toString().toUpperCase(Locale.US);
+    }
+
+    /**
+     * 十六进制字符串转二进制数组
+     * @param hexString string of hex-encoded values
+     * @return decoded byte array
+     */
+    protected byte[] hexStringToByteArray(String hexString) {
+        int len = hexString.length();
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(hexString.charAt(i), 16) << 4) + Character.digit(hexString.charAt(i + 1), 16));
+        }
+        return data;
+    }
+}
+
+
+-----------------------------------------------------------------------------
+
+/**
+ * Date：2018/11/20
+ * Author: xuliangchun
+ * Desc: 构建一个外观实现进度的回调
+ */
+public final class FileRequestBody extends RequestBody {
+    /**
+     * 实际请求体
+     */
+    private RequestBody requestBody;
+    /**
+     * 上传回调接口
+     */
+    private UploadUtil.UploadListener listener;
+
+    public FileRequestBody(RequestBody requestBody, UploadUtil.UploadListener listener) {
+        super();
+        this.requestBody = requestBody;
+        this.listener = listener;
+    }
+
+    @Override
+    public long contentLength() throws IOException {
+        return requestBody.contentLength();
+    }
+    @Override
+    public MediaType contentType() {
+        return requestBody.contentType();
+    }
+    @Override
+    public void writeTo(BufferedSink sink) throws IOException {
+        //包装完成的BufferedSink
+        BufferedSink bufferedSink = Okio.buffer(sink(sink));
+        //写入
+        requestBody.writeTo(bufferedSink);
+        //必须调用flush，否则最后一部分数据可能不会被写入
+        bufferedSink.flush();
+    }
+    /**
+     * 写入，回调进度接口
+     * @param sink Sink
+     * @return Sink
+     */
+    private Sink sink(Sink sink) {
+        return new ForwardingSink(sink) {
+            //当前写入字节数
+            long bytesWritten = 0L;
+            //总字节长度，避免多次调用contentLength()方法
+            long contentLength = 0L;
+            @Override
+            public void write(Buffer source, long byteCount) throws IOException {
+                super.write(source, byteCount);
+                if (contentLength == 0) {
+                    //获得contentLength的值，后续不再调用
+                    contentLength = contentLength();
+                }
+                //增加当前写入的字节数
+                bytesWritten += byteCount;
+                //回调
+                listener.onProgress((int) ((bytesWritten * 100)/contentLength));
+            }
+        };
+    }
+
+
+}
+
+
+
+---------------------------------------------------------------
+
+   static final String REQUEST_SAMPLE_URL = "https://sample.com/";
+    static final String REQUEST_URL_HEADER_KEY = "headerBaseUrl";
+
+    //配置多URL示例
+//    static final String REQUEST_URL_HEADER_SAMPLE_VALUE = "sample";
+    static final String REQUEST_URL_SAMPLE_HEADER = REQUEST_URL_HEADER_KEY + ":" + REQUEST_SAMPLE_URL;
+
+
+/**
+ * BaseUrl拦截器，用于处理多个BaseUrl的问题
+ */
+class BaseUrlInterceptor implements Interceptor {
+
+    @Override
+    public Response intercept(Chain chain) throws IOException {
+        //改造request
+        Request request = chain.request();
+        Request.Builder builder = request.newBuilder();
+        List<String> headers = request.headers(REQUEST_URL_HEADER_KEY);
+        if (headers != null && headers.size() > 0) {
+            builder.removeHeader(REQUEST_URL_HEADER_KEY);
+            HttpUrl oldHttpUrl = request.url();
+            String headValue = headers.get(0);
+            HttpUrl newBaseUrl;
+            if (TextUtils.isEmpty(headValue)){
+                newBaseUrl = HttpUrl.parse(REQUEST_BASE_URL);
+            }else {
+                newBaseUrl = HttpUrl.parse(headValue);
+            }
+            HttpUrl newHttpUrl = oldHttpUrl.newBuilder()
+                    .scheme(newBaseUrl.scheme())
+                    .host(newBaseUrl.host())
+                    .port(newBaseUrl.port())
+                    .build();
+            return chain.proceed(builder.url(newHttpUrl).build());
+
+        }
+        return chain.proceed(request);
+    }
+}
+
+--------------------------------------------------------------------------
+
+/**
+ * 日志拦截器
+ */
+class LoggingInterceptor implements Interceptor {
+
+    @Override
+    public Response intercept(Chain chain) throws IOException {
+
+        //这个chain里面包含了request和response，所以你要什么都可以从这里拿
+        Request request = chain.request();
+
+        long t1 = System.nanoTime();//请求发起的时间
+        StringBuilder stringBuilder = new StringBuilder();
+        if (request.body() instanceof FormBody){
+            FormBody formBody = (FormBody) request.body();
+            for (int i = 0;i<formBody.size();i++){
+                stringBuilder.append(String.format("%s : %s%n",formBody.encodedName(i),formBody.encodedValue(i)));
+            }
+        }
+
+        Log.i(TAG, String.format("发送请求:[%s] %n请求参数: %s on %s%n%s",
+                request.url(),stringBuilder, chain.connection(), request.headers()));
+
+        Response response = chain.proceed(request);
+
+        long t2 = System.nanoTime();//收到响应的时间
+
+        //这里不能直接使用response.body().string()的方式输出日志
+        //因为response.body().string()之后，response中的流会被关闭，程序会报错，我们需要创建出一
+        //个新的response给应用层处理
+        ResponseBody responseBody = response.peekBody(1024 * 1024);
+
+        Log.i(TAG, String.format("接收响应:[%s]%n返回json:[%s]%n时长:[%.1fms]%n%s",
+                response.request().url(),
+                responseBody.string(),
+                (t2 - t1) / 1e6d,
+                response.headers()));
+
+        return response;
+    }
+
+}
+
+
+--------------------------------------------------------------------------------------
+
+  <declare-styleable name="FixTabIndicator">
+        <attr name="tabIndicatorColor" format="color"/>
+        <attr name="tabIndicatorPosition" format="integer"/>
+        <attr name="tabIndicatorHeight" format="dimension"/>
+    </declare-styleable>
+
+
+/**
+ * Date：2018/11/29
+ * Author: xuliangchun
+ * Desc: 指示器 适用于屏幕固定等宽
+ */
+public class FixTabIndicator extends LinearLayout implements View.OnClickListener {
+    private float indicatorHeight;//指示器高度
+    private int indicatorWidth; //指示器宽度
+    private int indicatorPosition; //指示器当前位置
+    private List<TextView> textViews;
+    private Paint mPaint;
+
+    private int startX = 0;
+    private ValueAnimator animator;
+    private TabClickListener tabClickListener;
+
+    public FixTabIndicator(Context context) {
+        this(context, null);
+    }
+
+    public FixTabIndicator(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+        TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.FixTabIndicator);
+        int indicatorColor = array.getColor(R.styleable.FixTabIndicator_tabIndicatorColor, ContextCompat.getColor(context, R.color.color_f02c38));//指示器颜色
+        indicatorPosition = array.getInteger(R.styleable.FixTabIndicator_tabIndicatorPosition, 0);
+        indicatorHeight = array.getDimension(R.styleable.FixTabIndicator_tabIndicatorHeight,6);//读取到的是px
+        array.recycle();
+        textViews = new ArrayList<>();
+        mPaint = new Paint();
+        mPaint.setColor(indicatorColor);
+        mPaint.setStrokeWidth(indicatorHeight);
+        mPaint.setAntiAlias(true);
+    }
+
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        //把布局中的TextView统计到集合
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+            if (!(child instanceof TextView)) {
+                throw new RuntimeException("FixTabIndicator的子控件必须为TextView！");
+            }
+            textViews.add((TextView) child);
+        }
+
+        for (int i = 0; i < textViews.size(); i++) {
+            TextView textView = textViews.get(i);
+            mPaint.setTextSize(textView.getTextSize());
+            //计算指示器的宽度
+            indicatorWidth = (int) Math.max(indicatorWidth, mPaint.measureText(textView.getText().toString()));
+            textView.setTag(i);
+            textView.setOnClickListener(this);
+        }
+
+    }
+
+    /**
+     * 设置tab项点击监听
+     * @param tabClickListener
+     */
+    public void setTabClickListener(TabClickListener tabClickListener) {
+        this.tabClickListener = tabClickListener;
+    }
+
+    @Override
+    protected void dispatchDraw(Canvas canvas) {
+        super.dispatchDraw(canvas);
+        if (startX == 0) {
+            startX = (getWidth() / textViews.size() - indicatorWidth) / 2 + indicatorPosition * getWidth() / textViews.size();
+            textViews.get(0).setSelected(true);
+        }
+        int stopX = startX + indicatorWidth;
+        canvas.drawLine(startX, getHeight() - indicatorHeight/2, stopX, getHeight() - indicatorHeight/2, mPaint);
+    }
+
+    /**
+     * 设置指示器当前位置
+     * @param newPosition
+     */
+    public void setSelectPosition(int newPosition) {
+        if (newPosition == indicatorPosition)
+            return;
+        if (newPosition >= textViews.size()) {
+            Log.i(Constant.TAG,"FixTabIndicator下标越界！");
+            return;
+        }
+        if (animator != null && animator.isRunning()) {
+            animator.cancel();
+        }
+        //生成当前的position和上一次的position之间的startX中间值
+        animator = ValueAnimator.ofInt((getWidth() / textViews.size() - indicatorWidth) / 2 + indicatorPosition * getWidth() / textViews.size(), (getWidth() / textViews.size() - indicatorWidth) / 2 + newPosition * getWidth() / textViews.size());
+        animator.addUpdateListener(animation -> {
+            //刷新
+            startX = (int) animation.getAnimatedValue();
+            postInvalidate();
+        });
+        animator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                setTabTextColor(newPosition);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                startX = (getWidth() / textViews.size() - indicatorWidth) / 2 + newPosition * getWidth() / textViews.size();
+                postInvalidate();
+                setTabTextColor(newPosition);
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+        animator.start();
+
+        this.indicatorPosition = newPosition;
+    }
+
+    /**
+     * 设置TextView被选中状态
+     * @param position
+     */
+    private void setTabTextColor(int position) {
+        for (int i = 0; i < textViews.size(); i++) {
+            textViews.get(i).setSelected(position == i);
+        }
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        if (v instanceof TextView && v.getTag() != null) {
+            int position = (int) v.getTag();
+            setSelectPosition(position);
+            if (tabClickListener != null){
+                tabClickListener.onTabClick(position);
+            }
+        }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if (animator != null){
+            animator.cancel();
+            animator = null;
+        }
+    }
+
+    public interface TabClickListener{
+        void onTabClick(int position);
+    }
+}
+
+
+--------------------------------------------
+
+ <declare-styleable name="TagFlowLayout">
+        <attr name="ItemHorSpace" format="dimension"/>
+        <attr name="ItemVerSpace" format="dimension"/>
+    </declare-styleable>
+
+**
+ * Date：2018/12/4
+ * Author: xuliangchun
+ * Desc: 流式布局标签容器
+ */
+public class TagFlowLayout extends ViewGroup {
+    private float itemHorSpace;//子view横向间距
+    private float itemVerSpace;//子view纵向间距
+    private int maxRow = 5;//最大行数 仅在listener不为null时生效
+    private OnReachMaxRowListener listener;//达到最大行数时的监听
+
+    public TagFlowLayout(Context context) {
+        this(context, null);
+    }
+
+    public TagFlowLayout(Context context, AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
+
+    public TagFlowLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TagFlowLayout);
+        itemHorSpace = a.getDimension(R.styleable.TagFlowLayout_ItemHorSpace, 0);
+        itemVerSpace = a.getDimension(R.styleable.TagFlowLayout_ItemVerSpace, 0);
+        a.recycle();
+    }
+    //达到最大行数时的监听
+    public void setListener(OnReachMaxRowListener listener) {
+        this.listener = listener;
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        int width = getMeasuredWidth();
+        int childRow = 1;//当前正在布置第几行的child
+        int childRowWidth = 0;//当前布置行的child已经占了多少宽度
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+            if (childRowWidth + child.getMeasuredWidth() > width) {
+                childRowWidth = 0;
+                childRow++;
+            }
+            if (listener != null && childRow > maxRow) {
+                //达到最大行数跳出
+                listener.onReachMaxRow(i);
+                break;
+            }
+            int childLeft = childRowWidth;
+            int childTop = (int) ((childRow - 1) * (child.getMeasuredHeight() + itemVerSpace));
+            //这里childTop的计算方式对于不止一行的标签时会出现计算错误 有时间再优化
+            int childRight = childLeft + child.getMeasuredWidth();
+            int childBottom = childTop + child.getMeasuredHeight();
+            child.layout(childLeft, childTop, childRight, childBottom);
+            childRowWidth += child.getMeasuredWidth() + itemHorSpace;
+        }
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        measureChildren(widthMeasureSpec, heightMeasureSpec);
+        int childRow = 1;//当前正在布置第几行的child
+
+        int childRowWidth = 0;//当前布置行的child已经占了多少宽度
+        int width = MeasureSpec.getSize(widthMeasureSpec);
+        int height = MeasureSpec.getSize(heightMeasureSpec);
+        int requireHeight = 0;//根据child计算出来的高度
+        //在ViewGroup存在多重嵌套行为时，测量模式AT_MOST是不会生效的，默认会载入UNSPECIFIED
+        //所以这个地方两种模式下都需要自身计算高度
+        switch (MeasureSpec.getMode(heightMeasureSpec)) {
+            case MeasureSpec.AT_MOST:
+            case MeasureSpec.UNSPECIFIED:
+                for (int i = 0; i < getChildCount(); i++) {
+                    View child = getChildAt(i);
+                    if (childRowWidth + child.getMeasuredWidth() > width) {
+                        childRowWidth = 0;
+                        childRow++;
+                        if (listener != null && childRow > maxRow) {
+                            //达到最大行数跳出
+                            break;
+                        }
+                        requireHeight += child.getMeasuredHeight() + itemVerSpace;//后面再补第一行的高度
+                    }
+                    childRowWidth += child.getMeasuredWidth() + itemHorSpace;
+                }
+                break;
+            case MeasureSpec.EXACTLY:
+                requireHeight = height;
+                break;
+        }
+
+        if (getChildCount() > 0) {
+            requireHeight = requireHeight + getChildAt(0).getMeasuredHeight();//这里加一个第一行的高度
+        }
+        setMeasuredDimension(width, requireHeight);
+    }
+
+    public interface OnReachMaxRowListener {
+        void onReachMaxRow(int lastChildPosition);//从lastChildPosition开始(包含),后面的View全部不会测量摆放
+    }
+}
+
+
+
+
+
